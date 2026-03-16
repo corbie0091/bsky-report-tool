@@ -6,13 +6,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>상권 보고 생성기</title>
+<title>상권 보고 자동 생성기</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
 body{
 font-family:Arial;
-max-width:750px;
+max-width:800px;
 margin:auto;
 padding:15px;
 background:#f4f4f4;
@@ -33,13 +35,13 @@ margin-bottom:6px;
 }
 
 input{
-width:70px;
+width:80px;
 padding:6px;
 }
 
 textarea{
 width:100%;
-height:400px;
+height:350px;
 margin-top:10px;
 }
 
@@ -53,6 +55,13 @@ margin-top:8px;
 border-top:1px solid #ddd;
 padding-top:10px;
 margin-top:10px;
+}
+
+canvas{
+margin-top:20px;
+background:white;
+padding:10px;
+border-radius:10px;
 }
 
 </style>
@@ -72,25 +81,39 @@ margin-top:10px;
 <select id="area">
 
 <option>공구상가</option>
-<option>롯데후문</option>
+<option>전포동</option>
 <option>영광도서</option>
-<option>서면1번가</option>
-<option>전포</option>
-<option>경성대</option>
-<option>남포동</option>
-<option>광복동</option>
-<option>동래</option>
-<option>온천장</option>
-<option>연산동</option>
-<option>광안리</option>
-<option>해운대</option>
-<option>센텀</option>
-<option>덕천</option>
-<option>화명</option>
-<option>명륜</option>
-<option>구포</option>
+<option>당감</option>
+<option>양정</option>
+<option>개금</option>
+<option>동서대/주례</option>
+<option>조방</option>
+<option>초량</option>
+<option>동아대</option>
+<option>하단오거리</option>
+<option>라브랜드</option>
+<option>씨파크</option>
+<option>장림</option>
 <option>괴정</option>
-<option>하단</option>
+<option>강서구</option>
+<option>신호동</option>
+<option>삼익</option>
+<option>부평</option>
+<option>신동아</option>
+<option>자갈치</option>
+<option>자갈치 반쪽</option>
+<option>꼼장어/양곱창</option>
+<option>자갈마당</option>
+<option>영도 남항동</option>
+<option>영도 동삼동</option>
+<option>사상</option>
+<option>감전동</option>
+<option>덕포/모라</option>
+<option>덕천</option>
+<option>만덕</option>
+<option>구포</option>
+<option>화명</option>
+<option>방통대</option>
 
 </select>
 
@@ -121,7 +144,7 @@ margin-top:10px;
 <div class="row">청하 <input id="cheongha"></div>
 <div class="row">기타 <input id="etc4"></div>
 
-<div class="row">기타 주류회사 <input id="etcCompany"></div>
+<div class="row">기타주류회사 <input id="etcCompany"></div>
 
 </div>
 
@@ -139,13 +162,18 @@ margin-top:10px;
 
 <button onclick="generate()">보고서 생성</button>
 
-<button onclick="copy()">보고서 복사</button>
+<button onclick="copyText()">보고서 복사</button>
+
+<button onclick="copyChart()">그래프 복사</button>
 
 <textarea id="result"></textarea>
+
+<canvas id="chart" width="400" height="400"></canvas>
 
 <script>
 
 let workers=[]
+let chart
 
 function getToday(){
 
@@ -291,59 +319,78 @@ let text=
 - 총 테이블 수: ${total}T
 
 가. 무학: ${muhak}T (${percent(muhak,total)})
-- 좋은데이: ${goodday}T (${percent(goodday,total)})
-- 톡시리즈: ${tok}T (${percent(tok,total)})
-- 부산갈매기: ${galmegi}T (${percent(galmegi,total)})
-- 기타: ${etc1}T (${percent(etc1,total)})
-
 나. 하이트진로: ${hite}T (${percent(hite,total)})
-- 참이슬: ${chamisul}T (${percent(chamisul,total)})
-- 진로: ${jinro}T (${percent(jinro,total)})
-- 기타: ${etc2}T (${percent(etc2,total)})
-
 다. 대선주조: ${daesunSum}T (${percent(daesunSum,total)})
-- 대선(C1 포함): ${daesun}T (${percent(daesun,total)})
-- 부산: ${busan}T (${percent(busan,total)})
-- 기타: ${etc3}T (${percent(etc3,total)})
-
 라. 롯데: ${lotte}T (${percent(lotte,total)})
-- 새로: ${saero}T (${percent(saero,total)})
-- 청하: ${cheongha}T (${percent(cheongha,total)})
-- 기타: ${etc4}T (${percent(etc4,total)})
-
-마. 기타 주류회사: ${etcCompany}T (${percent(etcCompany,total)})
+마. 기타: ${etcCompany}T (${percent(etcCompany,total)})
 
 2. 전환 및 추가주문
 
 부산 갈매기 총 판매 병 수
 ${sellText}
 
-나. 총 전환: ${totalGood}t(좋은데이) / ${totalGal}t(부산갈매기) / ${totalTok}t(톡톡)
+총 전환: ${totalGood}t / ${totalGal}t / ${totalTok}t
 ${convText}
 
-다. 총 추가주문: ${addGood}t(좋은데이) / ${addGal}t(부산갈매기) / ${addTok}t(톡톡)
+총 추가주문: ${addGood}t / ${addGal}t / ${addTok}t
 ${addText}
-
-3. 타사 활동
-- 하이트진로:
-- 대선주조:
-- 롯데주류:
-
-4. 특이사항
-- 없음
 `
 
 document.getElementById("result").value=text
 
+drawChart(muhak,hite,daesunSum,lotte,etcCompany)
+
 }
 
-function copy(){
+function drawChart(muhak,hite,daesun,lotte,etc){
+
+let ctx=document.getElementById("chart")
+
+if(chart) chart.destroy()
+
+chart=new Chart(ctx,{
+
+type:"pie",
+
+data:{
+
+labels:["무학","하이트","대선","롯데","기타"],
+
+datasets:[{
+
+data:[muhak,hite,daesun,lotte,etc]
+
+}]
+
+}
+
+})
+
+}
+
+function copyText(){
 
 let text=document.getElementById("result")
 
 navigator.clipboard.writeText(text.value)
 
-alert("복사 완료")
+alert("보고서 복사 완료")
+
+}
+
+function copyChart(){
+
+let canvas=document.getElementById("chart")
+
+canvas.toBlob(blob=>{
+
+let item=new ClipboardItem({"image/png":blob})
+
+navigator.clipboard.write([item])
+
+})
+
+alert("그래프 복사 완료")
 
 }
 
