@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>상권 보고 자동 생성기</title>
 
 <style>
 
 body{
-font-family: Arial;
-max-width:600px;
+font-family:Arial;
+max-width:750px;
 margin:auto;
-padding:20px;
-background:#f7f7f7;
-}
-
-h2{
-text-align:center;
+padding:15px;
+background:#f4f4f4;
 }
 
 .section{
@@ -26,23 +25,33 @@ border-radius:10px;
 box-shadow:0 0 5px rgba(0,0,0,0.1);
 }
 
+.row{
+display:flex;
+justify-content:space-between;
+margin-bottom:6px;
+}
+
 input{
 width:70px;
-margin:3px;
-padding:5px;
+padding:6px;
 }
 
 textarea{
 width:100%;
-height:350px;
-margin-top:20px;
+height:400px;
+margin-top:10px;
 }
 
 button{
-padding:12px;
-margin-top:10px;
 width:100%;
-font-size:16px;
+padding:10px;
+margin-top:8px;
+}
+
+.workerBox{
+border-top:1px solid #ddd;
+padding-top:10px;
+margin-top:10px;
 }
 
 </style>
@@ -55,166 +64,245 @@ font-size:16px;
 
 <div class="section">
 
-날짜 <input id="date">
-상권 <input id="area">
+<div class="row">날짜 <input id="date"></div>
+<div class="row">상권 <input id="area"></div>
 
-<br><br>
-
-총 방문업소 <input id="shop">
-총 테이블 <input id="totalTable">
+<div class="row">총 방문업소 <input id="shop"></div>
+<div class="row">총 테이블 <input id="totalTable"></div>
 
 </div>
 
+
 <div class="section">
 
-<h3>무학</h3>
+<h3>점유비</h3>
 
-좋은데이 <input id="goodday">
-톡시리즈 <input id="tok">
-부산갈매기 <input id="galmegi">
-기타 <input id="etc1">
+<div class="row">좋은데이 <input id="goodday"></div>
+<div class="row">톡시리즈 <input id="tok"></div>
+<div class="row">부산갈매기 <input id="galmegi"></div>
+<div class="row">기타 <input id="etc1"></div>
+
+<div class="row">참이슬 <input id="chamisul"></div>
+<div class="row">진로 <input id="jinro"></div>
+<div class="row">기타 <input id="etc2"></div>
+
+<div class="row">대선 <input id="daesun"></div>
+<div class="row">부산 <input id="busan"></div>
+<div class="row">기타 <input id="etc3"></div>
+
+<div class="row">새로 <input id="saero"></div>
+<div class="row">청하 <input id="cheongha"></div>
+<div class="row">기타 <input id="etc4"></div>
+
+<div class="row">기타주류회사 <input id="etcCompany"></div>
 
 </div>
 
-<div class="section">
-
-<h3>하이트진로</h3>
-
-참이슬 <input id="chamisul">
-진로 <input id="jinro">
-기타 <input id="etc2">
-
-</div>
 
 <div class="section">
 
-<h3>대선주조</h3>
+<h3>근무자 추가</h3>
 
-대선 <input id="daesun">
-부산 <input id="busan">
-기타 <input id="etc3">
+<input id="workerName" placeholder="이름 입력">
 
-</div>
+<button onclick="addWorker()">근무자 추가</button>
 
-<div class="section">
-
-<h3>롯데</h3>
-
-새로 <input id="saero">
-청하 <input id="chungha">
-기타 <input id="etc4">
+<div id="workers"></div>
 
 </div>
 
 <button onclick="generate()">보고서 생성</button>
+
 <button onclick="copy()">보고서 복사</button>
 
 <textarea id="result"></textarea>
 
+
 <script>
 
-function percent(v,total){
-if(total==0) return 0;
-return ((v/total)*100).toFixed(1);
+let workers=[]
+
+function addWorker(){
+
+let name=document.getElementById("workerName").value
+
+if(!name) return
+
+workers.push(name)
+
+let html=`
+
+<div class="workerBox">
+
+<b>${name}</b>
+
+<div class="row">갈매기 판매 <input id="sell_${name}"></div>
+
+<div class="row">전환 좋은데이 <input id="conv_good_${name}"></div>
+<div class="row">전환 갈매기 <input id="conv_gal_${name}"></div>
+<div class="row">전환 톡톡 <input id="conv_tok_${name}"></div>
+
+<div class="row">추가주문 좋은데이 <input id="add_good_${name}"></div>
+<div class="row">추가주문 갈매기 <input id="add_gal_${name}"></div>
+<div class="row">추가주문 톡톡 <input id="add_tok_${name}"></div>
+
+</div>
+`
+
+document.getElementById("workers").insertAdjacentHTML("beforeend",html)
+
+document.getElementById("workerName").value=""
+
 }
 
 function val(id){
-return Number(document.getElementById(id).value)||0;
+return Number(document.getElementById(id)?.value)||0
 }
 
-function getToday(){
-
-let today=new Date();
-
-let month=today.getMonth()+1;
-let date=today.getDate();
-
-let day=["일","월","화","수","목","금","토"][today.getDay()];
-
-return `${month}월 ${date}일(${day})`;
-
+function percent(v,total){
+if(total==0)return "0.0%"
+return ((v/total)*100).toFixed(1)+"%"
 }
-
-document.getElementById("date").value=getToday();
 
 function generate(){
 
-let date=document.getElementById("date").value;
-let area=document.getElementById("area").value;
+let date=document.getElementById("date").value
+let area=document.getElementById("area").value
+let shop=val("shop")
+let total=val("totalTable")
 
-let shop=val("shop");
-let total=val("totalTable");
+let goodday=val("goodday")
+let tok=val("tok")
+let galmegi=val("galmegi")
+let etc1=val("etc1")
 
-let goodday=val("goodday");
-let tok=val("tok");
-let galmegi=val("galmegi");
-let etc1=val("etc1");
+let chamisul=val("chamisul")
+let jinro=val("jinro")
+let etc2=val("etc2")
 
-let chamisul=val("chamisul");
-let jinro=val("jinro");
-let etc2=val("etc2");
+let daesun=val("daesun")
+let busan=val("busan")
+let etc3=val("etc3")
 
-let daesun=val("daesun");
-let busan=val("busan");
-let etc3=val("etc3");
+let saero=val("saero")
+let cheongha=val("cheongha")
+let etc4=val("etc4")
 
-let saero=val("saero");
-let chungha=val("chungha");
-let etc4=val("etc4");
+let etcCompany=val("etcCompany")
 
-let muhak=goodday+tok+galmegi+etc1;
-let hite=chamisul+jinro+etc2;
-let daesunTotal=daesun+busan+etc3;
-let lotte=saero+chungha+etc4;
+let muhak=goodday+tok+galmegi+etc1
+let hite=chamisul+jinro+etc2
+let daesunSum=daesun+busan+etc3
+let lotte=saero+cheongha+etc4
 
-let text=`
-< ${date} ${area} 상권 보고 >
+let sellText=""
+let convText=""
+let addText=""
+
+let totalGood=0
+let totalGal=0
+let totalTok=0
+
+let addGood=0
+let addGal=0
+let addTok=0
+
+workers.forEach(name=>{
+
+let sell=val(`sell_${name}`)
+
+let cg=val(`conv_good_${name}`)
+let cga=val(`conv_gal_${name}`)
+let ct=val(`conv_tok_${name}`)
+
+let ag=val(`add_good_${name}`)
+let aga=val(`add_gal_${name}`)
+let at=val(`add_tok_${name}`)
+
+sellText+=`${name} : ${sell}본\n`
+
+convText+=`${name}: ${cg}t(좋은데이) / ${cga}t(부산갈매기) / ${ct}t(톡톡)\n`
+addText+=`${name}: ${ag}t(좋은데이) / ${aga}t(부산갈매기) / ${at}t(톡톡)\n`
+
+totalGood+=cg
+totalGal+=cga
+totalTok+=ct
+
+addGood+=ag
+addGal+=aga
+addTok+=at
+
+})
+
+let text=
+
+`< ${date} ${area} 상권 보고 >
 
 1. 점유비
 - 총 방문업소: ${shop}개
 - 총 테이블 수: ${total}T
 
-가. 무학: ${muhak}T (${percent(muhak,total)}%)
-- 좋은데이: ${goodday}T (${percent(goodday,total)}%)
-- 톡시리즈: ${tok}T (${percent(tok,total)}%)
-- 부산갈매기: ${galmegi}T (${percent(galmegi,total)}%)
-- 기타: ${etc1}T (${percent(etc1,total)}%)
+가. 무학: ${muhak}T (${percent(muhak,total)})
+- 좋은데이: ${goodday}T (${percent(goodday,total)})
+- 톡시리즈: ${tok}T (${percent(tok,total)})
+- 부산갈매기: ${galmegi}T (${percent(galmegi,total)})
+- 기타: ${etc1}T (${percent(etc1,total)})
 
-나. 하이트진로: ${hite}T (${percent(hite,total)}%)
-- 참이슬: ${chamisul}T (${percent(chamisul,total)}%)
-- 진로: ${jinro}T (${percent(jinro,total)}%)
-- 기타: ${etc2}T (${percent(etc2,total)}%)
+나. 하이트진로: ${hite}T (${percent(hite,total)})
+- 참이슬: ${chamisul}T (${percent(chamisul,total)})
+- 진로: ${jinro}T (${percent(jinro,total)})
+- 기타: ${etc2}T (${percent(etc2,total)})
 
-다. 대선주조: ${daesunTotal}T (${percent(daesunTotal,total)}%)
-- 대선: ${daesun}T (${percent(daesun,total)}%)
-- 부산: ${busan}T (${percent(busan,total)}%)
-- 기타: ${etc3}T (${percent(etc3,total)}%)
+다. 대선주조: ${daesunSum}T (${percent(daesunSum,total)})
+- 대선(C1 포함): ${daesun}T (${percent(daesun,total)})
+- 부산: ${busan}T (${percent(busan,total)})
+- 기타: ${etc3}T (${percent(etc3,total)})
 
-라. 롯데: ${lotte}T (${percent(lotte,total)}%)
-- 새로: ${saero}T (${percent(saero,total)}%)
-- 청하: ${chungha}T (${percent(chungha,total)}%)
-- 기타: ${etc4}T (${percent(etc4,total)}%)
+라. 롯데: ${lotte}T (${percent(lotte,total)})
+- 새로(살구 포함): ${saero}T (${percent(saero,total)})
+- 청하(별빛청하 포함): ${cheongha}T (${percent(cheongha,total)})
+- 기타: ${etc4}T (${percent(etc4,total)})
 
-`;
+마. 기타 주류회사: ${etcCompany}T (${percent(etcCompany,total)})
+※ 별도 제품 확인 시 항목 추가 입력
 
-document.getElementById("result").value=text;
+2. 전환 및 추가주문
+
+가. 근무인원
+
+부산 갈매기 총 판매 병 수
+${sellText}
+
+나. 총 전환: ${totalGood}t(좋은데이) / ${totalGal}t(부산갈매기) / ${totalTok}t(톡톡)
+${convText}
+
+다. 총 추가주문: ${addGood}t(좋은데이) / ${addGal}t(부산갈매기) / ${addTok}t(톡톡)
+${addText}
+
+3. 타사 활동
+- 하이트진로: 
+- 대선주조: 
+- 롯데주류: 
+
+4. 특이사항
+- 없음
+`
+
+document.getElementById("result").value=text
 
 }
 
 function copy(){
 
-let text=document.getElementById("result");
+let text=document.getElementById("result")
 
-text.select();
+navigator.clipboard.writeText(text.value)
 
-navigator.clipboard.writeText(text.value);
-
-alert("보고서 복사 완료");
+alert("복사 완료")
 
 }
 
 </script>
 
 </body>
-
 </html>
