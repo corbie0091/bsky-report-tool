@@ -1,401 +1,228 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="ko">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>상권 보고 자동 생성기</title>
+<title>상권 음용비율 분석</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 <style>
 
 body{
-font-family:Arial;
-max-width:800px;
-margin:auto;
-padding:15px;
+font-family: Arial;
 background:#f4f4f4;
+padding:20px;
 }
 
-.section{
+.container{
+max-width:600px;
+margin:auto;
 background:white;
-padding:15px;
-margin-bottom:15px;
+padding:20px;
 border-radius:10px;
-box-shadow:0 0 5px rgba(0,0,0,0.1);
 }
 
-.row{
-display:flex;
-justify-content:space-between;
-margin-bottom:6px;
+h2{
+text-align:center;
 }
 
-input{
-width:80px;
-padding:6px;
-}
-
-textarea{
+input,select{
 width:100%;
-height:350px;
-margin-top:10px;
+padding:10px;
+margin:5px 0;
+font-size:16px;
 }
 
 button{
 width:100%;
-padding:10px;
-margin-top:8px;
-}
-
-.worker{
-border-top:1px solid #ddd;
-padding-top:10px;
+padding:12px;
+font-size:16px;
+background:#444;
+color:white;
+border:none;
+border-radius:6px;
 margin-top:10px;
 }
 
 canvas{
 margin-top:20px;
-background:white;
+}
+
+table{
+width:100%;
+margin-top:20px;
+border-collapse:collapse;
+}
+
+th,td{
+border-bottom:1px solid #ddd;
 padding:10px;
-border-radius:10px;
+text-align:center;
+}
+
+th{
+background:#eee;
+}
+
+.total{
+font-weight:bold;
+}
+
+.info{
+text-align:center;
+margin-top:15px;
+font-size:18px;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<h2>상권 보고 생성기</h2>
+<div class="container">
 
-<div class="section">
-
-<div class="row">
-
-상권
+<h2 id="title"></h2>
 
 <select id="area">
-
 <option>공구상가</option>
-<option>전포동</option>
+<option>롯데후문</option>
 <option>영광도서</option>
-<option>당감</option>
-<option>양정</option>
-<option>개금</option>
-<option>동서대/주례</option>
-<option>조방</option>
-<option>초량</option>
-<option>동아대</option>
-<option>하단오거리</option>
-<option>라브랜드</option>
-<option>씨파크</option>
-<option>장림</option>
-<option>괴정</option>
-<option>강서구</option>
-<option>신호동</option>
 <option>삼익</option>
-<option>부평</option>
-<option>신동아</option>
-<option>자갈치</option>
-<option>자갈치 반쪽</option>
-<option>꼼장어/양곱창</option>
-<option>자갈마당</option>
-<option>영도 남항동</option>
-<option>영도 동삼동</option>
-<option>사상</option>
-<option>감전동</option>
-<option>덕포/모라</option>
-<option>덕천</option>
-<option>만덕</option>
-<option>구포</option>
-<option>화명</option>
-<option>방통대</option>
-
+<option>부산대</option>
+<option>서면</option>
 </select>
 
-</div>
+<input type="number" id="store" placeholder="총 방문 업소 수">
 
-<div class="row">총 방문업소 <input id="shop"></div>
+<h3>음용 테이블 입력</h3>
 
-</div>
+<input type="number" id="muhak" placeholder="무학">
+<input type="number" id="hite" placeholder="하이트진로">
+<input type="number" id="lotte" placeholder="롯데">
+<input type="number" id="daesun" placeholder="대선">
+<input type="number" id="etc" placeholder="기타">
 
-<div class="section">
+<button onclick="generate()">그래프 생성</button>
 
-<h3>점유비 입력</h3>
+<canvas id="chart"></canvas>
 
-<div class="row">좋은데이 <input id="goodday"></div>
-<div class="row">톡시리즈 <input id="tok"></div>
-<div class="row">부산갈매기 <input id="galmegi"></div>
-<div class="row">기타 <input id="etc1"></div>
+<div class="info" id="storeText"></div>
 
-<div class="row">참이슬 <input id="chamisul"></div>
-<div class="row">진로 <input id="jinro"></div>
-<div class="row">기타 <input id="etc2"></div>
-
-<div class="row">대선 <input id="daesun"></div>
-<div class="row">부산 <input id="busan"></div>
-<div class="row">기타 <input id="etc3"></div>
-
-<div class="row">새로 <input id="saero"></div>
-<div class="row">청하 <input id="cheongha"></div>
-<div class="row">기타 <input id="etc4"></div>
-
-<div class="row">기타주류회사 <input id="etcCompany"></div>
+<table id="table">
+<thead>
+<tr>
+<th>업체</th>
+<th>음용테이블</th>
+<th>전체 비율</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 
 </div>
-
-<div class="section">
-
-<h3>근무자 추가</h3>
-
-<input id="workerName" placeholder="이름 입력">
-
-<button onclick="addWorker()">근무자 추가</button>
-
-<div id="workers"></div>
-
-</div>
-
-<button onclick="generate()">보고서 생성</button>
-
-<button onclick="copyText()">보고서 복사</button>
-
-<button onclick="copyChart()">그래프 복사</button>
-
-<textarea id="result"></textarea>
-
-<canvas id="chart" width="400" height="400"></canvas>
 
 <script>
 
-let workers=[]
-let chart
-
-function getToday(){
-
-let d=new Date()
-
-let m=String(d.getMonth()+1).padStart(2,'0')
-let day=String(d.getDate()).padStart(2,'0')
-
-let week=["일","월","화","수","목","금","토"]
-
-return `${m}월 ${day}일(${week[d.getDay()]})`
-
-}
-
-function addWorker(){
-
-let name=document.getElementById("workerName").value
-
-if(!name)return
-
-workers.push(name)
-
-let html=`
-
-<div class="worker">
-
-<b>${name}</b>
-
-<div class="row">전환 좋은데이 <input id="conv_good_${name}"></div>
-<div class="row">전환 갈매기 <input id="conv_gal_${name}"></div>
-<div class="row">전환 톡톡 <input id="conv_tok_${name}"></div>
-
-<div class="row">추가주문 좋은데이 <input id="add_good_${name}"></div>
-<div class="row">추가주문 갈매기 <input id="add_gal_${name}"></div>
-<div class="row">추가주문 톡톡 <input id="add_tok_${name}"></div>
-
-</div>
-`
-
-document.getElementById("workers").insertAdjacentHTML("beforeend",html)
-
-document.getElementById("workerName").value=""
-
-}
-
-function val(id){
-
-return Number(document.getElementById(id)?.value)||0
-
-}
-
-function percent(v,total){
-
-if(total==0)return "0.0%"
-
-return ((v/total)*100).toFixed(1)+"%"
-
-}
+let chart;
 
 function generate(){
 
-let date=getToday()
+let today = new Date().toISOString().slice(0,10)
 
-let area=document.getElementById("area").value
-let shop=val("shop")
+let area = document.getElementById("area").value
+let store = document.getElementById("store").value
 
-let goodday=val("goodday")
-let tok=val("tok")
-let galmegi=val("galmegi")
-let etc1=val("etc1")
+document.getElementById("title").innerText =
+today + "\n남부산지점 - " + area
 
-let chamisul=val("chamisul")
-let jinro=val("jinro")
-let etc2=val("etc2")
+document.getElementById("storeText").innerText =
+"총 방문 업소 수 : " + store
 
-let daesun=val("daesun")
-let busan=val("busan")
-let etc3=val("etc3")
+let muhak = Number(document.getElementById("muhak").value)
+let hite = Number(document.getElementById("hite").value)
+let lotte = Number(document.getElementById("lotte").value)
+let daesun = Number(document.getElementById("daesun").value)
+let etc = Number(document.getElementById("etc").value)
 
-let saero=val("saero")
-let cheongha=val("cheongha")
-let etc4=val("etc4")
+let data = [muhak,hite,lotte,daesun,etc]
 
-let etcCompany=val("etcCompany")
+let total = data.reduce((a,b)=>a+b,0)
 
-let total=
-goodday+tok+galmegi+etc1+
-chamisul+jinro+etc2+
-daesun+busan+etc3+
-saero+cheongha+etc4+
-etcCompany
-
-let muhak=goodday+tok+galmegi+etc1
-let hite=chamisul+jinro+etc2
-let daesunSum=daesun+busan+etc3
-let lotte=saero+cheongha+etc4
-
-let totalGood=0
-let totalGal=0
-let totalTok=0
-
-let addGood=0
-let addGal=0
-let addTok=0
-
-let sellText=""
-let convText=""
-let addText=""
-
-workers.forEach(name=>{
-
-let cg=val(`conv_good_${name}`)
-let cga=val(`conv_gal_${name}`)
-let ct=val(`conv_tok_${name}`)
-
-let ag=val(`add_good_${name}`)
-let aga=val(`add_gal_${name}`)
-let at=val(`add_tok_${name}`)
-
-let sell=cga+aga
-
-sellText+=`${name} : ${sell}본\n`
-
-convText+=`${name}: ${cg}t(좋은데이) / ${cga}t(부산갈매기) / ${ct}t(톡톡)\n`
-addText+=`${name}: ${ag}t(좋은데이) / ${aga}t(부산갈매기) / ${at}t(톡톡)\n`
-
-totalGood+=cg
-totalGal+=cga
-totalTok+=ct
-
-addGood+=ag
-addGal+=aga
-addTok+=at
-
-})
-
-let text=
-
-`< ${date} ${area} 상권 보고 >
-
-1. 점유비
-- 총 방문업소: ${shop}개
-- 총 테이블 수: ${total}T
-
-가. 무학: ${muhak}T (${percent(muhak,total)})
-나. 하이트진로: ${hite}T (${percent(hite,total)})
-다. 대선주조: ${daesunSum}T (${percent(daesunSum,total)})
-라. 롯데: ${lotte}T (${percent(lotte,total)})
-마. 기타: ${etcCompany}T (${percent(etcCompany,total)})
-
-2. 전환 및 추가주문
-
-부산 갈매기 총 판매 병 수
-${sellText}
-
-총 전환: ${totalGood}t / ${totalGal}t / ${totalTok}t
-${convText}
-
-총 추가주문: ${addGood}t / ${addGal}t / ${addTok}t
-${addText}
-`
-
-document.getElementById("result").value=text
-
-drawChart(muhak,hite,daesunSum,lotte,etcCompany)
-
-}
-
-function drawChart(muhak,hite,daesun,lotte,etc){
-
-let ctx=document.getElementById("chart")
+let ctx = document.getElementById("chart")
 
 if(chart) chart.destroy()
 
-chart=new Chart(ctx,{
+chart = new Chart(ctx,{
 
 type:"pie",
 
 data:{
-
-labels:["무학","하이트","대선","롯데","기타"],
-
+labels:["무학","하이트진로","롯데","대선","기타"],
 datasets:[{
-
-data:[muhak,hite,daesun,lotte,etc]
-
+data:data,
+backgroundColor:[
+"#3b6edc",
+"#e74c3c",
+"#f39c12",
+"#27ae60",
+"#9b59b6"
+]
 }]
+},
 
+plugins:[ChartDataLabels],
+
+options:{
+plugins:{
+legend:{position:"right"},
+datalabels:{
+color:"#fff",
+font:{weight:"bold",size:16},
+formatter:(value)=>{
+if(total==0) return ""
+let p=(value/total*100).toFixed(1)
+return p+"%"
+}
+}
+}
 }
 
 })
 
-}
+let companies=["무학","하이트진로","롯데","대선","기타"]
 
-function copyText(){
+let tbody=document.querySelector("#table tbody")
 
-let text=document.getElementById("result")
+tbody.innerHTML=""
 
-navigator.clipboard.writeText(text.value)
+companies.forEach((c,i)=>{
 
-alert("보고서 복사 완료")
+let percent=total==0?0:(data[i]/total*100).toFixed(1)
 
-}
-
-function copyChart(){
-
-let canvas=document.getElementById("chart")
-
-canvas.toBlob(blob=>{
-
-let item=new ClipboardItem({"image/png":blob})
-
-navigator.clipboard.write([item])
+tbody.innerHTML+=`
+<tr>
+<td>${c}</td>
+<td>${data[i]}</td>
+<td>${percent}%</td>
+</tr>
+`
 
 })
 
-alert("그래프 복사 완료")
+tbody.innerHTML+=`
+<tr class="total">
+<td>합계</td>
+<td>${total}</td>
+<td></td>
+</tr>
+`
 
 }
 
 </script>
 
 </body>
-
 </html>
