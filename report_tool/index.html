@@ -357,32 +357,12 @@ let text=
 document.getElementById("result").value=text
 
 
-drawMainChart(muhak,hite,daesunSum,lotte,etcCompany)
 drawReportChart(muhak,hite,daesunSum,lotte,etcCompany,total,shop,area)
 
 }
 
 
-function drawMainChart(m,h,d,l,e){
 
-let ctx=document.getElementById("mainChart")
-
-if(mainChart)mainChart.destroy()
-
-mainChart=new Chart(ctx,{
-
-type:"pie",
-
-data:{
-labels:["무학","하이트진로","대선","롯데","기타"],
-datasets:[{
-data:[m,h,d,l,e]
-}]
-}
-
-})
-
-}
 
 
 function drawReportChart(m,h,d,l,e,total,shop,area){
