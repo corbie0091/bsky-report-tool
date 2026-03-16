@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>상권 보고 자동 생성기</title>
+
+<style>
+
+body{
+font-family: Arial;
+max-width:600px;
+margin:auto;
+padding:20px;
+background:#f7f7f7;
+}
+
+h2{
+text-align:center;
+}
+
+.section{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:10px;
+box-shadow:0 0 5px rgba(0,0,0,0.1);
+}
+
+input{
+width:70px;
+margin:3px;
+padding:5px;
+}
+
+textarea{
+width:100%;
+height:350px;
+margin-top:20px;
+}
+
+button{
+padding:12px;
+margin-top:10px;
+width:100%;
+font-size:16px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>상권 보고 생성기</h2>
+
+<div class="section">
+
+날짜 <input id="date">
+상권 <input id="area">
+
+<br><br>
+
+총 방문업소 <input id="shop">
+총 테이블 <input id="totalTable">
+
+</div>
+
+<div class="section">
+
+<h3>무학</h3>
+
+좋은데이 <input id="goodday">
+톡시리즈 <input id="tok">
+부산갈매기 <input id="galmegi">
+기타 <input id="etc1">
+
+</div>
+
+<div class="section">
+
+<h3>하이트진로</h3>
+
+참이슬 <input id="chamisul">
+진로 <input id="jinro">
+기타 <input id="etc2">
+
+</div>
+
+<div class="section">
+
+<h3>대선주조</h3>
+
+대선 <input id="daesun">
+부산 <input id="busan">
+기타 <input id="etc3">
+
+</div>
+
+<div class="section">
+
+<h3>롯데</h3>
+
+새로 <input id="saero">
+청하 <input id="chungha">
+기타 <input id="etc4">
+
+</div>
+
+<button onclick="generate()">보고서 생성</button>
+<button onclick="copy()">보고서 복사</button>
+
+<textarea id="result"></textarea>
+
+<script>
+
+function percent(v,total){
+if(total==0) return 0;
+return ((v/total)*100).toFixed(1);
+}
+
+function val(id){
+return Number(document.getElementById(id).value)||0;
+}
+
+function getToday(){
+
+let today=new Date();
+
+let month=today.getMonth()+1;
+let date=today.getDate();
+
+let day=["일","월","화","수","목","금","토"][today.getDay()];
+
+return `${month}월 ${date}일(${day})`;
+
+}
+
+document.getElementById("date").value=getToday();
+
+function generate(){
+
+let date=document.getElementById("date").value;
+let area=document.getElementById("area").value;
+
+let shop=val("shop");
+let total=val("totalTable");
+
+let goodday=val("goodday");
+let tok=val("tok");
+let galmegi=val("galmegi");
+let etc1=val("etc1");
+
+let chamisul=val("chamisul");
+let jinro=val("jinro");
+let etc2=val("etc2");
+
+let daesun=val("daesun");
+let busan=val("busan");
+let etc3=val("etc3");
+
+let saero=val("saero");
+let chungha=val("chungha");
+let etc4=val("etc4");
+
+let muhak=goodday+tok+galmegi+etc1;
+let hite=chamisul+jinro+etc2;
+let daesunTotal=daesun+busan+etc3;
+let lotte=saero+chungha+etc4;
+
+let text=`
+< ${date} ${area} 상권 보고 >
+
+1. 점유비
+- 총 방문업소: ${shop}개
+- 총 테이블 수: ${total}T
+
+가. 무학: ${muhak}T (${percent(muhak,total)}%)
+- 좋은데이: ${goodday}T (${percent(goodday,total)}%)
+- 톡시리즈: ${tok}T (${percent(tok,total)}%)
+- 부산갈매기: ${galmegi}T (${percent(galmegi,total)}%)
+- 기타: ${etc1}T (${percent(etc1,total)}%)
+
+나. 하이트진로: ${hite}T (${percent(hite,total)}%)
+- 참이슬: ${chamisul}T (${percent(chamisul,total)}%)
+- 진로: ${jinro}T (${percent(jinro,total)}%)
+- 기타: ${etc2}T (${percent(etc2,total)}%)
+
+다. 대선주조: ${daesunTotal}T (${percent(daesunTotal,total)}%)
+- 대선: ${daesun}T (${percent(daesun,total)}%)
+- 부산: ${busan}T (${percent(busan,total)}%)
+- 기타: ${etc3}T (${percent(etc3,total)}%)
+
+라. 롯데: ${lotte}T (${percent(lotte,total)}%)
+- 새로: ${saero}T (${percent(saero,total)}%)
+- 청하: ${chungha}T (${percent(chungha,total)}%)
+- 기타: ${etc4}T (${percent(etc4,total)}%)
+
+`;
+
+document.getElementById("result").value=text;
+
+}
+
+function copy(){
+
+let text=document.getElementById("result");
+
+text.select();
+
+navigator.clipboard.writeText(text.value);
+
+alert("보고서 복사 완료");
+
+}
+
+</script>
+
+</body>
+
+</html>
