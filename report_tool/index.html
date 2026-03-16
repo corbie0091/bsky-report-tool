@@ -326,14 +326,32 @@ let total=muhak+hite+daesunSum+lotte+etcCompany
 let text=
 `< ${date} ${area} 상권 보고 >
 
-총 방문업소: ${shop}개
-총 테이블 수: ${total}T
+1. 점유비
+- 총 방문업소: ${shop}개
+- 총 테이블 수: ${total}T
 
-무학 ${muhak}T (${percent(muhak,total)})
-하이트진로 ${hite}T (${percent(hite,total)})
-대선 ${daesunSum}T (${percent(daesunSum,total)})
-롯데 ${lotte}T (${percent(lotte,total)})
-기타 ${etcCompany}T (${percent(etcCompany,total)})
+가. 무학: ${muhak}T (${percent(muhak,total)})
+- 좋은데이: ${goodday}T (${percent(goodday,total)})
+- 톡시리즈: ${tok}T (${percent(tok,total)})
+- 부산갈매기: ${galmegi}T (${percent(galmegi,total)})
+- 기타: ${etc1}T (${percent(etc1,total)})
+
+나. 하이트진로: ${hite}T (${percent(hite,total)})
+- 참이슬: ${chamisul}T (${percent(chamisul,total)})
+- 진로: ${jinro}T (${percent(jinro,total)})
+- 기타: ${etc2}T (${percent(etc2,total)})
+
+다. 대선주조: ${daesunSum}T (${percent(daesunSum,total)})
+- 대선(C1 포함): ${daesun}T (${percent(daesun,total)})
+- 부산: ${busan}T (${percent(busan,total)})
+- 기타: ${etc3}T (${percent(etc3,total)})
+
+라. 롯데: ${lotte}T (${percent(lotte,total)})
+- 새로: ${saero}T (${percent(saero,total)})
+- 청하: ${cheongha}T (${percent(cheongha,total)})
+- 기타: ${etc4}T (${percent(etc4,total)})
+
+마. 기타 주류회사: ${etcCompany}T (${percent(etcCompany,total)})
 `
 
 document.getElementById("result").value=text
