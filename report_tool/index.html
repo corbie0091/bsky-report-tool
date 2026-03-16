@@ -1,228 +1,468 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
 
-<title>상권 음용비율 분석</title>
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>상권 보고 자동 생성기</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
 
 <style>
 
 body{
-font-family: Arial;
-background:#f4f4f4;
-padding:20px;
-}
-
-.container{
-max-width:600px;
+font-family:Arial;
+max-width:800px;
 margin:auto;
+padding:15px;
+background:#f4f4f4;
+}
+
+.section{
 background:white;
-padding:20px;
+padding:15px;
+margin-bottom:15px;
 border-radius:10px;
+box-shadow:0 0 5px rgba(0,0,0,0.1);
 }
 
-h2{
-text-align:center;
+.row{
+display:flex;
+justify-content:space-between;
+margin-bottom:6px;
 }
 
-input,select{
+input{
+width:80px;
+padding:6px;
+}
+
+textarea{
 width:100%;
-padding:10px;
-margin:5px 0;
-font-size:16px;
+height:350px;
+margin-top:10px;
 }
 
 button{
 width:100%;
-padding:12px;
-font-size:16px;
-background:#444;
-color:white;
-border:none;
-border-radius:6px;
+padding:10px;
+margin-top:8px;
+}
+
+.worker{
+border-top:1px solid #ddd;
+padding-top:10px;
 margin-top:10px;
 }
 
 canvas{
 margin-top:20px;
-}
-
-table{
-width:100%;
-margin-top:20px;
-border-collapse:collapse;
-}
-
-th,td{
-border-bottom:1px solid #ddd;
+background:white;
 padding:10px;
-text-align:center;
-}
-
-th{
-background:#eee;
-}
-
-.total{
-font-weight:bold;
-}
-
-.info{
-text-align:center;
-margin-top:15px;
-font-size:18px;
+border-radius:10px;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<h2>상권 보고 생성기</h2>
 
-<h2 id="title"></h2>
+<div class="section">
+
+<div class="row">
+
+상권
 
 <select id="area">
+
 <option>공구상가</option>
 <option>롯데후문</option>
 <option>영광도서</option>
-<option>삼익</option>
-<option>부산대</option>
-<option>서면</option>
+<option>서면1번가</option>
+<option>전포</option>
+<option>경성대</option>
+<option>남포동</option>
+<option>광복동</option>
+<option>동래</option>
+<option>온천장</option>
+<option>연산동</option>
+<option>광안리</option>
+<option>해운대</option>
+<option>센텀</option>
+<option>덕천</option>
+<option>화명</option>
+<option>명륜</option>
+<option>구포</option>
+<option>괴정</option>
+<option>하단</option>
+
 </select>
-
-<input type="number" id="store" placeholder="총 방문 업소 수">
-
-<h3>음용 테이블 입력</h3>
-
-<input type="number" id="muhak" placeholder="무학">
-<input type="number" id="hite" placeholder="하이트진로">
-<input type="number" id="lotte" placeholder="롯데">
-<input type="number" id="daesun" placeholder="대선">
-<input type="number" id="etc" placeholder="기타">
-
-<button onclick="generate()">그래프 생성</button>
-
-<canvas id="chart"></canvas>
-
-<div class="info" id="storeText"></div>
-
-<table id="table">
-<thead>
-<tr>
-<th>업체</th>
-<th>음용테이블</th>
-<th>전체 비율</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
 
 </div>
 
+<div class="row">총 방문업소 <input id="shop"></div>
+
+</div>
+
+<div class="section">
+
+<h3>점유비 입력</h3>
+
+<div class="row">좋은데이 <input id="goodday"></div>
+<div class="row">톡시리즈 <input id="tok"></div>
+<div class="row">부산갈매기 <input id="galmegi"></div>
+<div class="row">기타 <input id="etc1"></div>
+
+<div class="row">참이슬 <input id="chamisul"></div>
+<div class="row">진로 <input id="jinro"></div>
+<div class="row">기타 <input id="etc2"></div>
+
+<div class="row">대선 <input id="daesun"></div>
+<div class="row">부산 <input id="busan"></div>
+<div class="row">기타 <input id="etc3"></div>
+
+<div class="row">새로 <input id="saero"></div>
+<div class="row">청하 <input id="cheongha"></div>
+<div class="row">기타 <input id="etc4"></div>
+
+<div class="row">기타주류회사 <input id="etcCompany"></div>
+
+</div>
+
+<div class="section">
+
+<h3>근무자 추가</h3>
+
+<input id="workerName" placeholder="이름 입력">
+
+<button onclick="addWorker()">근무자 추가</button>
+
+<div id="workers"></div>
+
+</div>
+
+<button onclick="generate()">보고서 생성</button>
+
+<button onclick="copyText()">보고서 복사</button>
+
+<button onclick="copyChart()">그래프 복사</button>
+
+<textarea id="result"></textarea>
+
+<canvas id="chart" width="400" height="400"></canvas>
+
+<div id="reportGraph" style="display:none"></div>
+
 <script>
 
-let chart;
+let workers=[]
+let chart
+
+function getToday(){
+
+let d=new Date()
+
+let m=String(d.getMonth()+1).padStart(2,'0')
+let day=String(d.getDate()).padStart(2,'0')
+
+let week=["일","월","화","수","목","금","토"]
+
+return `${m}월 ${day}일(${week[d.getDay()]})`
+
+}
+
+function addWorker(){
+
+let name=document.getElementById("workerName").value
+
+if(!name)return
+
+workers.push(name)
+
+let html=`
+
+<div class="worker">
+
+<b>${name}</b>
+
+<div class="row">전환 좋은데이 <input id="conv_good_${name}"></div>
+<div class="row">전환 갈매기 <input id="conv_gal_${name}"></div>
+<div class="row">전환 톡톡 <input id="conv_tok_${name}"></div>
+
+<div class="row">추가주문 좋은데이 <input id="add_good_${name}"></div>
+<div class="row">추가주문 갈매기 <input id="add_gal_${name}"></div>
+<div class="row">추가주문 톡톡 <input id="add_tok_${name}"></div>
+
+</div>
+`
+
+document.getElementById("workers").insertAdjacentHTML("beforeend",html)
+
+document.getElementById("workerName").value=""
+
+}
+
+function val(id){
+return Number(document.getElementById(id)?.value)||0
+}
+
+function percent(v,total){
+if(total==0)return "0.0%"
+return ((v/total)*100).toFixed(1)+"%"
+}
 
 function generate(){
 
-let today = new Date().toISOString().slice(0,10)
+let date=getToday()
 
-let area = document.getElementById("area").value
-let store = document.getElementById("store").value
+let area=document.getElementById("area").value
+let shop=val("shop")
 
-document.getElementById("title").innerText =
-today + "\n남부산지점 - " + area
+let goodday=val("goodday")
+let tok=val("tok")
+let galmegi=val("galmegi")
+let etc1=val("etc1")
 
-document.getElementById("storeText").innerText =
-"총 방문 업소 수 : " + store
+let chamisul=val("chamisul")
+let jinro=val("jinro")
+let etc2=val("etc2")
 
-let muhak = Number(document.getElementById("muhak").value)
-let hite = Number(document.getElementById("hite").value)
-let lotte = Number(document.getElementById("lotte").value)
-let daesun = Number(document.getElementById("daesun").value)
-let etc = Number(document.getElementById("etc").value)
+let daesun=val("daesun")
+let busan=val("busan")
+let etc3=val("etc3")
 
-let data = [muhak,hite,lotte,daesun,etc]
+let saero=val("saero")
+let cheongha=val("cheongha")
+let etc4=val("etc4")
 
-let total = data.reduce((a,b)=>a+b,0)
+let etcCompany=val("etcCompany")
 
-let ctx = document.getElementById("chart")
+let total=
+goodday+tok+galmegi+etc1+
+chamisul+jinro+etc2+
+daesun+busan+etc3+
+saero+cheongha+etc4+
+etcCompany
+
+let muhak=goodday+tok+galmegi+etc1
+let hite=chamisul+jinro+etc2
+let daesunSum=daesun+busan+etc3
+let lotte=saero+cheongha+etc4
+
+let totalGood=0
+let totalGal=0
+let totalTok=0
+
+let addGood=0
+let addGal=0
+let addTok=0
+
+let sellText=""
+let convText=""
+let addText=""
+
+workers.forEach(name=>{
+
+let cg=val(`conv_good_${name}`)
+let cga=val(`conv_gal_${name}`)
+let ct=val(`conv_tok_${name}`)
+
+let ag=val(`add_good_${name}`)
+let aga=val(`add_gal_${name}`)
+let at=val(`add_tok_${name}`)
+
+let sell=cga+aga
+
+sellText+=`${name} : ${sell}본\n`
+
+convText+=`${name}: ${cg}t(좋은데이) / ${cga}t(부산갈매기) / ${ct}t(톡톡)\n`
+addText+=`${name}: ${ag}t(좋은데이) / ${aga}t(부산갈매기) / ${at}t(톡톡)\n`
+
+totalGood+=cg
+totalGal+=cga
+totalTok+=ct
+
+addGood+=ag
+addGal+=aga
+addTok+=at
+
+})
+
+let text=
+
+`< ${date} ${area} 상권 보고 >
+
+1. 점유비
+- 총 방문업소: ${shop}개
+- 총 테이블 수: ${total}T
+
+가. 무학: ${muhak}T (${percent(muhak,total)})
+나. 하이트진로: ${hite}T (${percent(hite,total)})
+다. 대선주조: ${daesunSum}T (${percent(daesunSum,total)})
+라. 롯데: ${lotte}T (${percent(lotte,total)})
+마. 기타: ${etcCompany}T (${percent(etcCompany,total)})
+
+2. 전환 및 추가주문
+
+부산 갈매기 총 판매 병 수
+${sellText}
+
+총 전환: ${totalGood}t / ${totalGal}t / ${totalTok}t
+${convText}
+
+총 추가주문: ${addGood}t / ${addGal}t / ${addTok}t
+${addText}
+`
+
+document.getElementById("result").value=text
+
+drawChart(muhak,hite,daesunSum,lotte,etcCompany)
+buildReportGraph(muhak,hite,daesunSum,lotte,etcCompany,shop,area)
+
+}
+
+function drawChart(muhak,hite,daesun,lotte,etc){
+
+let ctx=document.getElementById("chart")
 
 if(chart) chart.destroy()
 
-chart = new Chart(ctx,{
+chart=new Chart(ctx,{
 
 type:"pie",
 
 data:{
-labels:["무학","하이트진로","롯데","대선","기타"],
+
+labels:["무학","하이트","대선","롯데","기타"],
+
 datasets:[{
-data:data,
+
+data:[muhak,hite,daesun,lotte,etc]
+
+}]
+
+}
+
+})
+
+}
+
+function buildReportGraph(muhak,hite,daesun,lotte,etc,shop,area){
+
+let total=muhak+hite+daesun+lotte+etc
+
+let html=`
+
+<div style="background:white;padding:20px;width:600px">
+
+<h3 style="text-align:center">
+
+${getToday()}  
+남부산지점 - ${area}
+
+</h3>
+
+<canvas id="reportChart" width="400" height="400"></canvas>
+
+<p style="text-align:center;margin-top:10px">
+
+총 방문 업소 수 : ${shop}
+
+</p>
+
+</div>
+`
+
+document.getElementById("reportGraph").innerHTML=html
+
+let ctx=document.getElementById("reportChart")
+
+new Chart(ctx,{
+
+type:"pie",
+
+data:{
+
+labels:["(주)무학","하이트진로","대선","롯데","기타"],
+
+datasets:[{
+
+data:[muhak,hite,daesun,lotte,etc],
+
 backgroundColor:[
 "#3b6edc",
 "#e74c3c",
-"#f39c12",
 "#27ae60",
+"#f39c12",
 "#9b59b6"
 ]
+
 }]
+
 },
 
 plugins:[ChartDataLabels],
 
 options:{
+
 plugins:{
+
 legend:{position:"right"},
+
 datalabels:{
 color:"#fff",
 font:{weight:"bold",size:16},
 formatter:(value)=>{
-if(total==0) return ""
-let p=(value/total*100).toFixed(1)
-return p+"%"
+if(total==0)return ""
+return ((value/total)*100).toFixed(1)+"%"
 }
 }
+
 }
+
 }
 
 })
 
-let companies=["무학","하이트진로","롯데","대선","기타"]
+}
 
-let tbody=document.querySelector("#table tbody")
+function copyText(){
 
-tbody.innerHTML=""
+let text=document.getElementById("result")
 
-companies.forEach((c,i)=>{
+navigator.clipboard.writeText(text.value)
 
-let percent=total==0?0:(data[i]/total*100).toFixed(1)
+alert("보고서 복사 완료")
 
-tbody.innerHTML+=`
-<tr>
-<td>${c}</td>
-<td>${data[i]}</td>
-<td>${percent}%</td>
-</tr>
-`
+}
+
+async function copyChart(){
+
+let node=document.getElementById("reportGraph")
+
+let canvas=await html2canvas(node)
+
+canvas.toBlob(blob=>{
+
+let item=new ClipboardItem({"image/png":blob})
+
+navigator.clipboard.write([item])
 
 })
 
-tbody.innerHTML+=`
-<tr class="total">
-<td>합계</td>
-<td>${total}</td>
-<td></td>
-</tr>
-`
+alert("그래프 복사 완료")
 
 }
 
 </script>
 
 </body>
+
 </html>
