@@ -418,9 +418,13 @@ font:{weight:"bold",size:16},
 
 formatter:(v)=>{
 
-if(total==0)return ""
+if(total==0) return ""
 
-return ((v/total)*100).toFixed(1)+"%"
+let p = (v/total)*100
+
+if(p < 10) return ""
+
+return p.toFixed(1) + "%"
 
 }
 
