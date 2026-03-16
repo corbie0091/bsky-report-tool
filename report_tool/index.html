@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>상권 보고 자동 생성기</title>
 
@@ -16,9 +16,9 @@
 
 body{
 font-family:Arial;
-max-width:800px;
+max-width:900px;
 margin:auto;
-padding:15px;
+padding:20px;
 background:#f4f4f4;
 }
 
@@ -36,14 +36,13 @@ justify-content:space-between;
 margin-bottom:6px;
 }
 
-input{
-width:80px;
+input,select{
 padding:6px;
 }
 
 textarea{
 width:100%;
-height:350px;
+height:320px;
 margin-top:10px;
 }
 
@@ -51,6 +50,10 @@ button{
 width:100%;
 padding:10px;
 margin-top:8px;
+border:none;
+background:#444;
+color:white;
+border-radius:6px;
 }
 
 .worker{
@@ -66,13 +69,53 @@ padding:10px;
 border-radius:10px;
 }
 
+h3{
+margin-top:0;
+}
+
+.reportBox{
+background:white;
+padding:20px;
+margin-top:20px;
+border-radius:10px;
+}
+
+.reportTitle{
+text-align:center;
+font-weight:bold;
+font-size:18px;
+margin-bottom:10px;
+}
+
+.info{
+text-align:center;
+margin-top:10px;
+font-size:16px;
+}
+
+table{
+width:100%;
+margin-top:15px;
+border-collapse:collapse;
+}
+
+th,td{
+border-bottom:1px solid #ddd;
+padding:8px;
+text-align:center;
+}
+
+th{
+background:#eee;
+}
+
 </style>
 
 </head>
 
 <body>
 
-<h2>상권 보고 생성기</h2>
+<h2>상권 보고 자동 생성기</h2>
 
 <div class="section">
 
@@ -98,18 +141,18 @@ border-radius:10px;
 <option>센텀</option>
 <option>덕천</option>
 <option>화명</option>
-<option>명륜</option>
-<option>구포</option>
-<option>괴정</option>
-<option>하단</option>
 
 </select>
 
 </div>
 
-<div class="row">총 방문업소 <input id="shop"></div>
+<div class="row">
+총 방문업소
+<input id="shop">
+</div>
 
 </div>
+
 
 <div class="section">
 
@@ -136,6 +179,7 @@ border-radius:10px;
 
 </div>
 
+
 <div class="section">
 
 <h3>근무자 추가</h3>
@@ -148,22 +192,52 @@ border-radius:10px;
 
 </div>
 
-<button onclick="generate()">보고서 생성</button>
 
+<button onclick="generateReport()">보고서 생성</button>
 <button onclick="copyText()">보고서 복사</button>
-
-<button onclick="copyChart()">그래프 복사</button>
 
 <textarea id="result"></textarea>
 
-<canvas id="chart" width="400" height="400"></canvas>
 
-<div id="reportGraph" style="display:none"></div>
+<canvas id="mainChart"></canvas>
+
+
+<div id="reportArea" style="display:none">
+
+<div class="reportBox">
+
+<div class="reportTitle" id="reportTitle"></div>
+
+<canvas id="reportChart"></canvas>
+
+<div class="info" id="reportShop"></div>
+
+<table id="reportTable">
+
+<thead>
+
+<tr>
+<th>업체</th>
+<th>음용테이블</th>
+<th>전체 비율</th>
+</tr>
+
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+</div>
+
+</div>
+
 
 <script>
 
 let workers=[]
-let chart
+let mainChart
+let reportChart
 
 function getToday(){
 
@@ -181,7 +255,6 @@ return `${m}월 ${day}일(${week[d.getDay()]})`
 function addWorker(){
 
 let name=document.getElementById("workerName").value
-
 if(!name)return
 
 workers.push(name)
@@ -204,7 +277,6 @@ let html=`
 `
 
 document.getElementById("workers").insertAdjacentHTML("beforeend",html)
-
 document.getElementById("workerName").value=""
 
 }
@@ -214,14 +286,13 @@ return Number(document.getElementById(id)?.value)||0
 }
 
 function percent(v,total){
-if(total==0)return "0.0%"
+if(total==0)return "0%"
 return ((v/total)*100).toFixed(1)+"%"
 }
 
-function generate(){
+function generateReport(){
 
 let date=getToday()
-
 let area=document.getElementById("area").value
 let shop=val("shop")
 
@@ -244,157 +315,84 @@ let etc4=val("etc4")
 
 let etcCompany=val("etcCompany")
 
-let total=
-goodday+tok+galmegi+etc1+
-chamisul+jinro+etc2+
-daesun+busan+etc3+
-saero+cheongha+etc4+
-etcCompany
-
 let muhak=goodday+tok+galmegi+etc1
 let hite=chamisul+jinro+etc2
 let daesunSum=daesun+busan+etc3
 let lotte=saero+cheongha+etc4
 
-let totalGood=0
-let totalGal=0
-let totalTok=0
+let total=muhak+hite+daesunSum+lotte+etcCompany
 
-let addGood=0
-let addGal=0
-let addTok=0
-
-let sellText=""
-let convText=""
-let addText=""
-
-workers.forEach(name=>{
-
-let cg=val(`conv_good_${name}`)
-let cga=val(`conv_gal_${name}`)
-let ct=val(`conv_tok_${name}`)
-
-let ag=val(`add_good_${name}`)
-let aga=val(`add_gal_${name}`)
-let at=val(`add_tok_${name}`)
-
-let sell=cga+aga
-
-sellText+=`${name} : ${sell}본\n`
-
-convText+=`${name}: ${cg}t(좋은데이) / ${cga}t(부산갈매기) / ${ct}t(톡톡)\n`
-addText+=`${name}: ${ag}t(좋은데이) / ${aga}t(부산갈매기) / ${at}t(톡톡)\n`
-
-totalGood+=cg
-totalGal+=cga
-totalTok+=ct
-
-addGood+=ag
-addGal+=aga
-addTok+=at
-
-})
 
 let text=
-
 `< ${date} ${area} 상권 보고 >
 
-1. 점유비
-- 총 방문업소: ${shop}개
-- 총 테이블 수: ${total}T
+총 방문업소: ${shop}개
+총 테이블 수: ${total}T
 
-가. 무학: ${muhak}T (${percent(muhak,total)})
-나. 하이트진로: ${hite}T (${percent(hite,total)})
-다. 대선주조: ${daesunSum}T (${percent(daesunSum,total)})
-라. 롯데: ${lotte}T (${percent(lotte,total)})
-마. 기타: ${etcCompany}T (${percent(etcCompany,total)})
-
-2. 전환 및 추가주문
-
-부산 갈매기 총 판매 병 수
-${sellText}
-
-총 전환: ${totalGood}t / ${totalGal}t / ${totalTok}t
-${convText}
-
-총 추가주문: ${addGood}t / ${addGal}t / ${addTok}t
-${addText}
+무학 ${muhak}T (${percent(muhak,total)})
+하이트진로 ${hite}T (${percent(hite,total)})
+대선 ${daesunSum}T (${percent(daesunSum,total)})
+롯데 ${lotte}T (${percent(lotte,total)})
+기타 ${etcCompany}T (${percent(etcCompany,total)})
 `
 
 document.getElementById("result").value=text
 
-drawChart(muhak,hite,daesunSum,lotte,etcCompany)
-buildReportGraph(muhak,hite,daesunSum,lotte,etcCompany,shop,area)
+
+drawMainChart(muhak,hite,daesunSum,lotte,etcCompany)
+drawReportChart(muhak,hite,daesunSum,lotte,etcCompany,total,shop,area)
 
 }
 
-function drawChart(muhak,hite,daesun,lotte,etc){
 
-let ctx=document.getElementById("chart")
+function drawMainChart(m,h,d,l,e){
 
-if(chart) chart.destroy()
+let ctx=document.getElementById("mainChart")
 
-chart=new Chart(ctx,{
+if(mainChart)mainChart.destroy()
+
+mainChart=new Chart(ctx,{
 
 type:"pie",
 
 data:{
-
-labels:["무학","하이트","대선","롯데","기타"],
-
+labels:["무학","하이트진로","대선","롯데","기타"],
 datasets:[{
-
-data:[muhak,hite,daesun,lotte,etc]
-
+data:[m,h,d,l,e]
 }]
-
 }
 
 })
 
 }
 
-function buildReportGraph(muhak,hite,daesun,lotte,etc,shop,area){
 
-let total=muhak+hite+daesun+lotte+etc
+function drawReportChart(m,h,d,l,e,total,shop,area){
 
-let html=`
+document.getElementById("reportArea").style.display="block"
 
-<div style="background:white;padding:20px;width:600px">
+document.getElementById("reportTitle").innerText=
+getToday()+" 남부산지점 - "+area
 
-<h3 style="text-align:center">
+document.getElementById("reportShop").innerText=
+"총 방문 업소 수 : "+shop
 
-${getToday()}  
-남부산지점 - ${area}
-
-</h3>
-
-<canvas id="reportChart" width="400" height="400"></canvas>
-
-<p style="text-align:center;margin-top:10px">
-
-총 방문 업소 수 : ${shop}
-
-</p>
-
-</div>
-`
-
-document.getElementById("reportGraph").innerHTML=html
 
 let ctx=document.getElementById("reportChart")
 
-new Chart(ctx,{
+if(reportChart)reportChart.destroy()
+
+reportChart=new Chart(ctx,{
 
 type:"pie",
 
 data:{
 
-labels:["(주)무학","하이트진로","대선","롯데","기타"],
+labels:["무학","하이트진로","대선","롯데","기타"],
 
 datasets:[{
 
-data:[muhak,hite,daesun,lotte,etc],
+data:[m,h,d,l,e],
 
 backgroundColor:[
 "#3b6edc",
@@ -417,12 +415,19 @@ plugins:{
 legend:{position:"right"},
 
 datalabels:{
+
 color:"#fff",
+
 font:{weight:"bold",size:16},
-formatter:(value)=>{
+
+formatter:(v)=>{
+
 if(total==0)return ""
-return ((value/total)*100).toFixed(1)+"%"
+
+return ((v/total)*100).toFixed(1)+"%"
+
 }
+
 }
 
 }
@@ -431,7 +436,27 @@ return ((value/total)*100).toFixed(1)+"%"
 
 })
 
+
+let companies=["무학","하이트진로","대선","롯데","기타"]
+let data=[m,h,d,l,e]
+
+let tbody=document.querySelector("#reportTable tbody")
+tbody.innerHTML=""
+
+companies.forEach((c,i)=>{
+
+tbody.innerHTML+=`
+<tr>
+<td>${c}</td>
+<td>${data[i]}</td>
+<td>${percent(data[i],total)}</td>
+</tr>
+`
+
+})
+
 }
+
 
 function copyText(){
 
@@ -440,24 +465,6 @@ let text=document.getElementById("result")
 navigator.clipboard.writeText(text.value)
 
 alert("보고서 복사 완료")
-
-}
-
-async function copyChart(){
-
-let node=document.getElementById("reportGraph")
-
-let canvas=await html2canvas(node)
-
-canvas.toBlob(blob=>{
-
-let item=new ClipboardItem({"image/png":blob})
-
-navigator.clipboard.write([item])
-
-})
-
-alert("그래프 복사 완료")
 
 }
 
