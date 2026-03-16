@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>상권 보고 자동 생성기</title>
+<title>상권 보고 생성기</title>
 
 <style>
 
@@ -48,7 +49,7 @@ padding:10px;
 margin-top:8px;
 }
 
-.workerBox{
+.worker{
 border-top:1px solid #ddd;
 padding-top:10px;
 margin-top:10px;
@@ -64,18 +65,44 @@ margin-top:10px;
 
 <div class="section">
 
-<div class="row">날짜 <input id="date"></div>
-<div class="row">상권 <input id="area"></div>
+<div class="row">
 
-<div class="row">총 방문업소 <input id="shop"></div>
-<div class="row">총 테이블 <input id="totalTable"></div>
+상권
+
+<select id="area">
+
+<option>공구상가</option>
+<option>롯데후문</option>
+<option>영광도서</option>
+<option>서면1번가</option>
+<option>전포</option>
+<option>경성대</option>
+<option>남포동</option>
+<option>광복동</option>
+<option>동래</option>
+<option>온천장</option>
+<option>연산동</option>
+<option>광안리</option>
+<option>해운대</option>
+<option>센텀</option>
+<option>덕천</option>
+<option>화명</option>
+<option>명륜</option>
+<option>구포</option>
+<option>괴정</option>
+<option>하단</option>
+
+</select>
 
 </div>
 
+<div class="row">총 방문업소 <input id="shop"></div>
+
+</div>
 
 <div class="section">
 
-<h3>점유비</h3>
+<h3>점유비 입력</h3>
 
 <div class="row">좋은데이 <input id="goodday"></div>
 <div class="row">톡시리즈 <input id="tok"></div>
@@ -94,10 +121,9 @@ margin-top:10px;
 <div class="row">청하 <input id="cheongha"></div>
 <div class="row">기타 <input id="etc4"></div>
 
-<div class="row">기타주류회사 <input id="etcCompany"></div>
+<div class="row">기타 주류회사 <input id="etcCompany"></div>
 
 </div>
-
 
 <div class="section">
 
@@ -117,26 +143,36 @@ margin-top:10px;
 
 <textarea id="result"></textarea>
 
-
 <script>
 
 let workers=[]
+
+function getToday(){
+
+let d=new Date()
+
+let m=String(d.getMonth()+1).padStart(2,'0')
+let day=String(d.getDate()).padStart(2,'0')
+
+let week=["일","월","화","수","목","금","토"]
+
+return `${m}월 ${day}일(${week[d.getDay()]})`
+
+}
 
 function addWorker(){
 
 let name=document.getElementById("workerName").value
 
-if(!name) return
+if(!name)return
 
 workers.push(name)
 
 let html=`
 
-<div class="workerBox">
+<div class="worker">
 
 <b>${name}</b>
-
-<div class="row">갈매기 판매 <input id="sell_${name}"></div>
 
 <div class="row">전환 좋은데이 <input id="conv_good_${name}"></div>
 <div class="row">전환 갈매기 <input id="conv_gal_${name}"></div>
@@ -156,20 +192,25 @@ document.getElementById("workerName").value=""
 }
 
 function val(id){
+
 return Number(document.getElementById(id)?.value)||0
+
 }
 
 function percent(v,total){
+
 if(total==0)return "0.0%"
+
 return ((v/total)*100).toFixed(1)+"%"
+
 }
 
 function generate(){
 
-let date=document.getElementById("date").value
+let date=getToday()
+
 let area=document.getElementById("area").value
 let shop=val("shop")
-let total=val("totalTable")
 
 let goodday=val("goodday")
 let tok=val("tok")
@@ -190,14 +231,17 @@ let etc4=val("etc4")
 
 let etcCompany=val("etcCompany")
 
+let total=
+goodday+tok+galmegi+etc1+
+chamisul+jinro+etc2+
+daesun+busan+etc3+
+saero+cheongha+etc4+
+etcCompany
+
 let muhak=goodday+tok+galmegi+etc1
 let hite=chamisul+jinro+etc2
 let daesunSum=daesun+busan+etc3
 let lotte=saero+cheongha+etc4
-
-let sellText=""
-let convText=""
-let addText=""
 
 let totalGood=0
 let totalGal=0
@@ -207,9 +251,11 @@ let addGood=0
 let addGal=0
 let addTok=0
 
-workers.forEach(name=>{
+let sellText=""
+let convText=""
+let addText=""
 
-let sell=val(`sell_${name}`)
+workers.forEach(name=>{
 
 let cg=val(`conv_good_${name}`)
 let cga=val(`conv_gal_${name}`)
@@ -218,6 +264,8 @@ let ct=val(`conv_tok_${name}`)
 let ag=val(`add_good_${name}`)
 let aga=val(`add_gal_${name}`)
 let at=val(`add_tok_${name}`)
+
+let sell=cga+aga
 
 sellText+=`${name} : ${sell}본\n`
 
@@ -259,16 +307,13 @@ let text=
 - 기타: ${etc3}T (${percent(etc3,total)})
 
 라. 롯데: ${lotte}T (${percent(lotte,total)})
-- 새로(살구 포함): ${saero}T (${percent(saero,total)})
-- 청하(별빛청하 포함): ${cheongha}T (${percent(cheongha,total)})
+- 새로: ${saero}T (${percent(saero,total)})
+- 청하: ${cheongha}T (${percent(cheongha,total)})
 - 기타: ${etc4}T (${percent(etc4,total)})
 
 마. 기타 주류회사: ${etcCompany}T (${percent(etcCompany,total)})
-※ 별도 제품 확인 시 항목 추가 입력
 
 2. 전환 및 추가주문
-
-가. 근무인원
 
 부산 갈매기 총 판매 병 수
 ${sellText}
@@ -280,9 +325,9 @@ ${convText}
 ${addText}
 
 3. 타사 활동
-- 하이트진로: 
-- 대선주조: 
-- 롯데주류: 
+- 하이트진로:
+- 대선주조:
+- 롯데주류:
 
 4. 특이사항
 - 없음
@@ -305,4 +350,5 @@ alert("복사 완료")
 </script>
 
 </body>
+
 </html>
