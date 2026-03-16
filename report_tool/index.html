@@ -109,6 +109,15 @@ th{
 background:#eee;
 }
 
+.company-section {
+  padding-top: 10px;           /* 구분선과 텍스트 간격 */
+  margin-top: 15px;            /* 위쪽 여백 */
+  font-weight: bold;            /* 글씨 굵게 */
+  font-size: 1.2em;            /* 글씨 크기 약간 키움 */
+  color: #333;                  /* 텍스트 색상 */
+  border-bottom: 2px solid #ccc;  /* 구분선 */
+}
+
 </style>
 
 </head>
@@ -158,24 +167,30 @@ background:#eee;
 
 <h3>점유비 입력</h3>
 
+<div class="company-section">무학</div>
 <div class="row">좋은데이 <input id="goodday"></div>
 <div class="row">톡시리즈 <input id="tok"></div>
 <div class="row">부산갈매기 <input id="galmegi"></div>
 <div class="row">기타 <input id="etc1"></div>
 
+<div class="company-section">하이트진로</div>
 <div class="row">참이슬 <input id="chamisul"></div>
 <div class="row">진로 <input id="jinro"></div>
 <div class="row">기타 <input id="etc2"></div>
 
+<div class="company-section">대선주조</div>
 <div class="row">대선 <input id="daesun"></div>
 <div class="row">부산 <input id="busan"></div>
 <div class="row">기타 <input id="etc3"></div>
 
+<div class="company-section">롯데</div>
 <div class="row">새로 <input id="saero"></div>
 <div class="row">청하 <input id="cheongha"></div>
 <div class="row">기타 <input id="etc4"></div>
 
-<div class="row">기타주류회사 <input id="etcCompany"></div>
+<div class="company-section">기타주류회사</div>
+<div class="row">기타주류소주<input id="etcCompany"></div>
+<div class="row">* 별도 제품 확인시 상권보고에 추가 항목 입력</div>
 
 </div>
 
