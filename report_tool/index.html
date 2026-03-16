@@ -2,10 +2,8 @@
 <html lang="ko">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>남부산 음용비 계산기</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,127 +11,105 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
 
 <style>
-
 body{
-font-family:Arial;
-max-width:900px;
-margin:auto;
-padding:20px;
-background:#f4f4f4;
+  font-family:Arial;
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+  background:#f4f4f4;
 }
-
 .section{
-background:white;
-padding:15px;
-margin-bottom:15px;
-border-radius:10px;
-box-shadow:0 0 5px rgba(0,0,0,0.1);
+  background:white;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:10px;
+  box-shadow:0 0 5px rgba(0,0,0,0.1);
 }
-
 .row{
-display:flex;
-justify-content:space-between;
-margin-bottom:6px;
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
 }
-
 input,select{
-padding:6px;
+  padding:6px;
 }
-
 textarea{
-width:100%;
-height:320px;
-margin-top:10px;
+  width:100%;
+  height:320px;
+  margin-top:10px;
 }
-
 button{
-width:100%;
-padding:10px;
-margin-top:8px;
-border:none;
-background:#444;
-color:white;
-border-radius:6px;
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border:none;
+  background:#444;
+  color:white;
+  border-radius:6px;
 }
-
 .worker{
-border-top:1px solid #ddd;
-padding-top:10px;
-margin-top:10px;
+  border-top:1px solid #ddd;
+  padding-top:10px;
+  margin-top:10px;
 }
-
 canvas{
-margin-top:20px;
-background:white;
-padding:10px;
-border-radius:10px;
+  margin-top:20px;
+  background:white;
+  padding:10px;
+  border-radius:10px;
 }
-
 h3{
-margin-top:0;
+  margin-top:0;
 }
-
 .reportBox{
-background:white;
-padding:20px;
-margin-top:20px;
-border-radius:10px;
+  background:white;
+  padding:20px;
+  margin-top:20px;
+  border-radius:10px;
 }
-
 .reportTitle{
-text-align:center;
-font-weight:bold;
-font-size:18px;
-margin-bottom:10px;
+  text-align:center;
+  font-weight:bold;
+  font-size:18px;
+  margin-bottom:10px;
 }
-
 .info{
-text-align:center;
-margin-top:10px;
-font-size:16px;
+  text-align:center;
+  margin-top:10px;
+  font-size:16px;
 }
-
 table{
-width:100%;
-margin-top:15px;
-border-collapse:collapse;
+  width:100%;
+  margin-top:15px;
+  border-collapse:collapse;
 }
-
 th,td{
-border-bottom:1px solid #ddd;
-padding:8px;
-text-align:center;
+  border-bottom:1px solid #ddd;
+  padding:8px;
+  text-align:center;
 }
-
 th{
-background:#eee;
+  background:#eee;
 }
-
 .company-section {
-  padding-top: 10px;           /* 구분선과 텍스트 간격 */
-  margin-top: 15px;            /* 위쪽 여백 */
-  font-weight: bold;            /* 글씨 굵게 */
-  font-size: 1.2em;            /* 글씨 크기 약간 키움 */
-  color: #333;                  /* 텍스트 색상 */
-  border-bottom: 2px solid #ccc;  /* 구분선 */
+  padding-top: 10px;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #333;
+  border-bottom: 2px solid #ccc;
 }
-
 </style>
-
 </head>
 
 <body>
-
 <h2>남부산 음용비 계산기</h2>
 
+<!-- 상권 입력 -->
 <div class="section">
-
 <div class="row">
-
 상권
-
 <select id="area">
-
 <option>공구상가</option>
 <option>공구상가 부전</option>
 <option>전포</option>
@@ -169,24 +145,17 @@ background:#eee;
 <option>구포</option>
 <option>화명</option>
 <option>방통대</option>
-
-
 </select>
-
 </div>
-
 <div class="row">
 총 방문업소
 <input id="shop">
 </div>
-
 </div>
 
-
+<!-- 점유비 입력 -->
 <div class="section">
-
 <h3>1. 점유비 입력</h3>
-
 <div class="company-section">무학</div>
 <div class="row">좋은데이 <input id="goodday"></div>
 <div class="row">톡시리즈 <input id="tok"></div>
@@ -211,174 +180,152 @@ background:#eee;
 <div class="company-section">기타주류회사</div>
 <div class="row">기타주류소주<input id="etcCompany"></div>
 <div class="row">* 별도 제품 확인시 상권보고에 추가 항목 입력</div>
-
 </div>
 
-
-
-
-
+<!-- 전환 및 추가주문 -->
 <div class="section">
-
 <h3>2. 전환 및 추가주문</h3>
-
 <input id="workerName" placeholder="이름 입력">
-
 <button onclick="addWorker()">근무자 추가</button>
-
 <div id="workers"></div>
-
 </div>
 
-
+<!-- 타사 활동 -->
 <div class="section">
 <h3>3. 타사 활동</h3>
 <div class="row">하이트진로 대판팀 <input id="hite_team" type="number" min="0" style="width:60px;"> / 행사팀 <input id="hite_event" type="number" min="0" style="width:60px;"></div>
 <div class="row">대선주조 대판팀 <input id="daesun_team" type="number" min="0" style="width:60px;"> / 행사팀 <input id="daesun_event" type="number" min="0" style="width:60px;"></div>
 </div>
 
+<!-- 특이사항 -->
 <div class="section">
 <h3>4. 특이사항</h3>
 <textarea id="special_notes" placeholder="특이사항 입력"></textarea>
 </div>
-
 
 <button onclick="generateReport()">보고서 생성</button>
 <button onclick="copyText()">보고서 복사</button>
 
 <textarea id="result"></textarea>
 
-
-
 <div id="reportArea" style="display:none">
-
 <div class="reportBox">
-
 <div class="reportTitle" id="reportTitle"></div>
-
 <canvas id="reportChart"></canvas>
-
 <div class="info" id="reportShop"></div>
-
 <table id="reportTable">
-
 <thead>
-
 <tr>
 <th>업체</th>
 <th>음용테이블</th>
 <th>전체 비율</th>
 </tr>
-
 </thead>
-
 <tbody></tbody>
-
 </table>
-
 </div>
-
 </div>
-
 
 <script>
-
-let workers=[]
-let mainChart
-let reportChart
+let workers = [];
+let reportChart;
 
 function getToday(){
+  let d=new Date();
+  let m=String(d.getMonth()+1).padStart(2,'0');
+  let day=String(d.getDate()).padStart(2,'0');
+  let week=["일","월","화","수","목","금","토"];
+  return `${m}월 ${day}일(${week[d.getDay()]})`;
+}
 
-let d=new Date()
-
-let m=String(d.getMonth()+1).padStart(2,'0')
-let day=String(d.getDate()).padStart(2,'0')
-
-let week=["일","월","화","수","목","금","토"]
-
-return `${m}월 ${day}일(${week[d.getDay()]})`
-
+// 이름을 ID-safe하게 변환
+function safeId(name){
+  return name.replace(/\s+/g,"_");
 }
 
 function addWorker(){
+  let name=document.getElementById("workerName").value;
+  if(!name) return;
+  workers.push(name);
+  let sid = safeId(name);
 
-let name=document.getElementById("workerName").value
-if(!name)return
-
-workers.push(name)
-
-let html=`
-
-<div class="worker">
-
-<b>${name}</b>
-
-<div class="row">전환 좋은데이 <input id="conv_good_${name}"></div>
-<div class="row">전환 갈매기 <input id="conv_gal_${name}"></div>
-<div class="row">전환 톡톡 <input id="conv_tok_${name}"></div>
-
-<div class="row">추가주문 좋은데이 <input id="add_good_${name}"></div>
-<div class="row">추가주문 갈매기 <input id="add_gal_${name}"></div>
-<div class="row">추가주문 톡톡 <input id="add_tok_${name}"></div>
-
-</div>
-`
-
-document.getElementById("workers").insertAdjacentHTML("beforeend",html)
-document.getElementById("workerName").value=""
-
+  let html = `
+  <div class="worker">
+    <b>${name}</b>
+    <div class="row">전환 좋은데이 <input id="conv_good_${sid}"></div>
+    <div class="row">전환 갈매기 <input id="conv_gal_${sid}"></div>
+    <div class="row">전환 톡톡 <input id="conv_tok_${sid}"></div>
+    <div class="row">추가주문 좋은데이 <input id="add_good_${sid}"></div>
+    <div class="row">추가주문 갈매기 <input id="add_gal_${sid}"></div>
+    <div class="row">추가주문 톡톡 <input id="add_tok_${sid}"></div>
+  </div>`;
+  document.getElementById("workers").insertAdjacentHTML("beforeend",html);
+  document.getElementById("workerName").value="";
 }
 
 function val(id){
-return Number(document.getElementById(id)?.value)||0
+  return Number(document.getElementById(id)?.value)||0;
 }
 
 function percent(v,total){
-if(total==0)return "0%"
-return ((v/total)*100).toFixed(1)+"%"
+  if(total==0) return "0%";
+  return ((v/total)*100).toFixed(1)+"%";
 }
 
 function generateReport(){
+  let date = getToday();
+  let area = document.getElementById("area").value;
+  let shop = val("shop");
 
-  let date=getToday()
-  let area=document.getElementById("area").value
-  let shop=val("shop")
+  let goodday = val("goodday"), tok=val("tok"), galmegi=val("galmegi"), etc1=val("etc1");
+  let chamisul=val("chamisul"), jinro=val("jinro"), etc2=val("etc2");
+  let daesun=val("daesun"), busan=val("busan"), etc3=val("etc3");
+  let saero=val("saero"), cheongha=val("cheongha"), etc4=val("etc4");
+  let etcCompany=val("etcCompany");
 
-  let goodday=val("goodday")
-  let tok=val("tok")
-  let galmegi=val("galmegi")
-  let etc1=val("etc1")
+  let muhak=goodday+tok+galmegi+etc1;
+  let hite=chamisul+jinro+etc2;
+  let daesunSum=daesun+busan+etc3;
+  let lotte=saero+cheongha+etc4;
+  let total = muhak+hite+daesunSum+lotte+etcCompany;
 
-  let chamisul=val("chamisul")
-  let jinro=val("jinro")
-  let etc2=val("etc2")
+  let h_team=val("hite_team"), h_event=val("hite_event");
+  let d_team=val("daesun_team"), d_event=val("daesun_event");
+  let notes = document.getElementById("special_notes").value.trim();
 
-  let daesun=val("daesun")
-  let busan=val("busan")
-  let etc3=val("etc3")
+  // 2번 전환 및 추가주문
+  let total_conv_good=0,total_conv_gal=0,total_conv_tok=0;
+  let total_add_good=0,total_add_gal=0,total_add_tok=0;
+  let convText = `2. 전환 및 추가주문\n가. 근무인원\n\n부산 갈매기 총 판매 병 수\n`;
 
-  let saero=val("saero")
-  let cheongha=val("cheongha")
-  let etc4=val("etc4")
+  workers.forEach(name=>{
+    let sid=safeId(name);
+    let conv_good=val(`conv_good_${sid}`), conv_gal=val(`conv_gal_${sid}`), conv_tok=val(`conv_tok_${sid}`);
+    let add_good=val(`add_good_${sid}`), add_gal=val(`add_gal_${sid}`), add_tok=val(`add_tok_${sid}`);
 
-  let etcCompany=val("etcCompany")
+    // 근무자별 부산갈매기 총 판매 병 수
+    let totalGal = conv_gal + add_gal;
+  convText += `${name} : ${totalGal}본\n`;
 
-  let muhak=goodday+tok+galmegi+etc1
-  let hite=chamisul+jinro+etc2
-  let daesunSum=daesun+busan+etc3
-  let lotte=saero+cheongha+etc4
-  let total=muhak+hite+daesunSum+lotte+etcCompany
+    total_conv_good += conv_good; total_conv_gal += conv_gal; total_conv_tok += conv_tok;
+    total_add_good += add_good; total_add_gal += add_gal; total_add_tok += add_tok;
 
-  // ← 여기 추가
-  let h_team = val("hite_team")
-  let h_event = val("hite_event")
-  let d_team = val("daesun_team")
-  let d_event = val("daesun_event")
+    
+  });
 
-  let notes = document.getElementById("special_notes").value.trim()
+  convText += `\n나. 총 전환: ${total_conv_good}t(좋은데이) / ${total_conv_gal}t(부산갈매기) / ${total_conv_tok}t(톡톡)\n`;
+  workers.forEach(name=>{
+    let sid=safeId(name);
+    convText += `${name}: ${val(`conv_good_${sid}`)}t(좋은데이) / ${val(`conv_gal_${sid}`)}t(부산갈매기) / ${val(`conv_tok_${sid}`)}t(톡톡)\n`;
+  });
 
-  let text=
-`< ${date} ${area} 상권 보고 >
+  convText += `\n다. 총 추가주문: ${total_add_good}t(좋은데이) / ${total_add_gal}t(부산갈매기) / ${total_add_tok}t(톡톡)\n`;
+  workers.forEach(name=>{
+    let sid=safeId(name);
+    convText += `${name}: ${val(`add_good_${sid}`)}t(좋은데이) / ${val(`add_gal_${sid}`)}t(부산갈매기) / ${val(`add_tok_${sid}`)}t(톡톡)\n`;
+  });
+
+  let text = `< ${date} ${area} 상권 보고 >
 
 1. 점유비
 - 총 방문업소: ${shop}개
@@ -406,131 +353,71 @@ function generateReport(){
 - 기타: ${etc4}T (${percent(etc4,total)})
 
 마. 기타 주류회사: ${etcCompany}T (${percent(etcCompany,total)})
+※ 별도 제품 확인 시 항목 추가 입력
+
+${convText}
 
 3. 타사 활동
 ${h_team || h_event ? `- 하이트진로: 대판팀 ${h_team}명 / 행사팀 ${h_event}명` : ""}
 ${d_team || d_event ? `- 대선주조: 대판팀 ${d_team}명 / 행사팀 ${d_event}명` : ""}
 
 4. 특이사항
-${notes ? `- ${notes}` : "- 없음"}
-`
+${notes ? `- ${notes}` : "- 없음"}`;
 
-  document.getElementById("result").value=text
+  document.getElementById("result").value = text;
 
-  drawReportChart(muhak,hite,daesunSum,lotte,etcCompany,total,shop,area)
+  drawReportChart(muhak,hite,daesunSum,lotte,etcCompany,total,shop,area);
 }
-
-
-
-
 
 function drawReportChart(m,h,d,l,e,total,shop,area){
+  document.getElementById("reportArea").style.display="block";
+  document.getElementById("reportTitle").innerText = getToday()+" 남부산지점 - "+area;
+  document.getElementById("reportShop").innerText = "총 방문 업소 수 : "+shop;
 
-document.getElementById("reportArea").style.display="block"
+  let ctx=document.getElementById("reportChart");
+  if(reportChart) reportChart.destroy();
 
-document.getElementById("reportTitle").innerText=
-getToday()+" 남부산지점 - "+area
+  reportChart=new Chart(ctx,{
+    type:"pie",
+    data:{
+      labels:["무학","하이트진로","대선","롯데","기타"],
+      datasets:[{
+        data:[m,h,d,l,e],
+        backgroundColor:["#3b6edc","#e74c3c","#27ae60","#f39c12","#9b59b6"]
+      }]
+    },
+    plugins:[ChartDataLabels],
+    options:{
+      plugins:{
+        legend:{position:"right"},
+        datalabels:{
+          color:"#fff",
+          font:{weight:"bold",size:16},
+          formatter:(v)=>{
+            if(total==0) return "";
+            let p = (v/total)*100;
+            if(p < 10) return "";
+            return p.toFixed(1) + "%";
+          }
+        }
+      }
+    }
+  });
 
-document.getElementById("reportShop").innerText=
-"총 방문 업소 수 : "+shop
-
-
-let ctx=document.getElementById("reportChart")
-
-if(reportChart)reportChart.destroy()
-
-reportChart=new Chart(ctx,{
-
-type:"pie",
-
-data:{
-
-labels:["무학","하이트진로","대선","롯데","기타"],
-
-datasets:[{
-
-data:[m,h,d,l,e],
-
-backgroundColor:[
-"#3b6edc",
-"#e74c3c",
-"#27ae60",
-"#f39c12",
-"#9b59b6"
-]
-
-}]
-
-},
-
-plugins:[ChartDataLabels],
-
-options:{
-
-plugins:{
-
-legend:{position:"right"},
-
-datalabels:{
-
-color:"#fff",
-
-font:{weight:"bold",size:16},
-
-formatter:(v)=>{
-
-if(total==0) return ""
-
-let p = (v/total)*100
-
-if(p < 10) return ""
-
-return p.toFixed(1) + "%"
-
+  let companies=["무학","하이트진로","대선","롯데","기타"];
+  let data=[m,h,d,l,e];
+  let tbody=document.querySelector("#reportTable tbody");
+  tbody.innerHTML="";
+  companies.forEach((c,i)=>{
+    tbody.innerHTML+=`<tr><td>${c}</td><td>${data[i]}</td><td>${percent(data[i],total)}</td></tr>`;
+  });
 }
-
-}
-
-}
-
-}
-
-})
-
-
-let companies=["무학","하이트진로","대선","롯데","기타"]
-let data=[m,h,d,l,e]
-
-let tbody=document.querySelector("#reportTable tbody")
-tbody.innerHTML=""
-
-companies.forEach((c,i)=>{
-
-tbody.innerHTML+=`
-<tr>
-<td>${c}</td>
-<td>${data[i]}</td>
-<td>${percent(data[i],total)}</td>
-</tr>
-`
-
-})
-
-}
-
 
 function copyText(){
-
-let text=document.getElementById("result")
-
-navigator.clipboard.writeText(text.value)
-
-alert("보고서 복사 완료")
-
+  let text=document.getElementById("result");
+  navigator.clipboard.writeText(text.value);
+  alert("보고서 복사 완료");
 }
-
 </script>
-
 </body>
-
 </html>
