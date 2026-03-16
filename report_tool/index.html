@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>상권 보고 자동 생성기</title>
+<title>남부산 음용비 계산기</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -185,7 +185,7 @@ background:#eee;
 
 <div class="section">
 
-<h3>점유비 입력</h3>
+<h3>1. 점유비 입력</h3>
 
 <div class="company-section">무학</div>
 <div class="row">좋은데이 <input id="goodday"></div>
@@ -215,9 +215,12 @@ background:#eee;
 </div>
 
 
+
+
+
 <div class="section">
 
-<h3>근무자 추가</h3>
+<h3>2. 전환 및 추가주문</h3>
 
 <input id="workerName" placeholder="이름 입력">
 
@@ -225,6 +228,18 @@ background:#eee;
 
 <div id="workers"></div>
 
+</div>
+
+
+<div class="section">
+<h3>3. 타사 활동</h3>
+<div class="row">하이트진로 대판팀 <input id="hite_team" type="number" min="0" style="width:60px;"> / 행사팀 <input id="hite_event" type="number" min="0" style="width:60px;"></div>
+<div class="row">대선주조 대판팀 <input id="daesun_team" type="number" min="0" style="width:60px;"> / 행사팀 <input id="daesun_event" type="number" min="0" style="width:60px;"></div>
+</div>
+
+<div class="section">
+<h3>4. 특이사항</h3>
+<textarea id="special_notes" placeholder="특이사항 입력"></textarea>
 </div>
 
 
@@ -325,38 +340,44 @@ return ((v/total)*100).toFixed(1)+"%"
 
 function generateReport(){
 
-let date=getToday()
-let area=document.getElementById("area").value
-let shop=val("shop")
+  let date=getToday()
+  let area=document.getElementById("area").value
+  let shop=val("shop")
 
-let goodday=val("goodday")
-let tok=val("tok")
-let galmegi=val("galmegi")
-let etc1=val("etc1")
+  let goodday=val("goodday")
+  let tok=val("tok")
+  let galmegi=val("galmegi")
+  let etc1=val("etc1")
 
-let chamisul=val("chamisul")
-let jinro=val("jinro")
-let etc2=val("etc2")
+  let chamisul=val("chamisul")
+  let jinro=val("jinro")
+  let etc2=val("etc2")
 
-let daesun=val("daesun")
-let busan=val("busan")
-let etc3=val("etc3")
+  let daesun=val("daesun")
+  let busan=val("busan")
+  let etc3=val("etc3")
 
-let saero=val("saero")
-let cheongha=val("cheongha")
-let etc4=val("etc4")
+  let saero=val("saero")
+  let cheongha=val("cheongha")
+  let etc4=val("etc4")
 
-let etcCompany=val("etcCompany")
+  let etcCompany=val("etcCompany")
 
-let muhak=goodday+tok+galmegi+etc1
-let hite=chamisul+jinro+etc2
-let daesunSum=daesun+busan+etc3
-let lotte=saero+cheongha+etc4
+  let muhak=goodday+tok+galmegi+etc1
+  let hite=chamisul+jinro+etc2
+  let daesunSum=daesun+busan+etc3
+  let lotte=saero+cheongha+etc4
+  let total=muhak+hite+daesunSum+lotte+etcCompany
 
-let total=muhak+hite+daesunSum+lotte+etcCompany
+  // ← 여기 추가
+  let h_team = val("hite_team")
+  let h_event = val("hite_event")
+  let d_team = val("daesun_team")
+  let d_event = val("daesun_event")
 
+  let notes = document.getElementById("special_notes").value.trim()
 
-let text=
+  let text=
 `< ${date} ${area} 상권 보고 >
 
 1. 점유비
@@ -385,13 +406,18 @@ let text=
 - 기타: ${etc4}T (${percent(etc4,total)})
 
 마. 기타 주류회사: ${etcCompany}T (${percent(etcCompany,total)})
+
+3. 타사 활동
+${h_team || h_event ? `- 하이트진로: 대판팀 ${h_team}명 / 행사팀 ${h_event}명` : ""}
+${d_team || d_event ? `- 대선주조: 대판팀 ${d_team}명 / 행사팀 ${d_event}명` : ""}
+
+4. 특이사항
+${notes ? `- ${notes}` : "- 없음"}
 `
 
-document.getElementById("result").value=text
+  document.getElementById("result").value=text
 
-
-drawReportChart(muhak,hite,daesunSum,lotte,etcCompany,total,shop,area)
-
+  drawReportChart(muhak,hite,daesunSum,lotte,etcCompany,total,shop,area)
 }
 
 
