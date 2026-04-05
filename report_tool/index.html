@@ -104,6 +104,10 @@ th{
   border:2px solid red !important;
 }
 
+select.error {
+  border:2px solid red;
+}
+
 </style>
 </head>
 
@@ -115,6 +119,7 @@ th{
 <div class="row">
 상권
 <select id="area">
+<option value="">상권 선택하세요</option>
 <option>공구상가</option>
 <option>공구상가 부전</option>
 <option>전포</option>
@@ -296,16 +301,13 @@ function percent(v,total){
 
 function generateReport(){
 
+if(!validateArea()) return;
+if(!validateShop()) return;
+
+
 let shopInput = document.getElementById("shop");
 
-if(!shopInput.value){
-  alert("총 방문업소 수를 입력해주세요 😊");
-  shopInput.classList.add("error");
-  shopInput.focus();
-  return;
-} else {
-  shopInput.classList.remove("error");
-}
+
   let date = getToday();
   let area = document.getElementById("area").value;
   let shop = val("shop");
@@ -394,6 +396,7 @@ ${notes ? `- ${notes}` : "- 없음"}`;
 
   document.getElementById("result").value = text;
   drawReportChart(muhak,hite,daesunSum,lotte,etcCompany,total,shop,area);
+  localStorage.setItem("reportGenerated", "yes");
 }
 
 // --- 구글폼 제출 ---
@@ -413,8 +416,16 @@ function submitToGoogleForm() {
 
 // 복사 + 제출
 function copyAndSubmit(){
+  if(!validateArea()) return;
+  if(!validateShop()) return;
+
+  let generated = localStorage.getItem("reportGenerated");
+  if(generated !== "yes"){
+    alert("보고서를 먼저 생성해주세요");
+    return;
+  }
+
   let text=document.getElementById("result");
-  if(!text.value){ alert("먼저 보고서를 생성해주세요!"); return; }
   navigator.clipboard.writeText(text.value);
   submitToGoogleForm();
 }
@@ -483,7 +494,6 @@ function loadData(){
     // 1시간 지나면 초기화
     if(diff > EXPIRE_TIME){
       localStorage.clear();
-      alert("저장된 데이터가 1시간이 지나 초기화되었습니다.");
       return;
     }
   }
@@ -507,6 +517,15 @@ document.querySelectorAll("input, textarea, select").forEach(el=>{
 window.onload = function(){
    loadWorkers();
    loadData();
+   localStorage.removeItem("reportGenerated");
+
+   let today = new Date().toDateString();
+   let lastAlert = localStorage.getItem("areaAlertDate");
+
+   if(lastAlert !== today){
+      alert("맨 위에서 근무한 상권으로 상권명을 변경해주세요");
+      localStorage.setItem("areaAlertDate", today);
+   }
 };
 
 function saveWorkers(){
@@ -569,7 +588,31 @@ document.querySelectorAll("#workers input").forEach(el=>{
   el.addEventListener("input", saveData);
 });
 
+function validateArea(){
+  let area = document.getElementById("area");
+  if(!area.value){
+    alert("상권을 선택해주세요!");
+    area.classList.add("error");
+    area.focus();
+    return false;
+  }
+  area.classList.remove("error");
+  return true;
+}
 
+function validateShop(){
+  let shop = document.getElementById("shop");
+
+  if(!shop.value || Number(shop.value) <= 0){
+    alert("총 방문업소 수는 1 이상 입력해주세요!");
+    shop.classList.add("error");
+    shop.focus();
+    return false;
+  }
+
+  shop.classList.remove("error");
+  return true;
+}
 
 </script>
 </body>
