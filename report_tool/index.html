@@ -218,7 +218,7 @@ select.error {
 </div>
 
 <button onclick="generateReport()">보고서 생성</button>
-<button onclick="copyAndSubmit()">보고서 복사</button>
+
 
 <textarea id="result"></textarea>
 
@@ -239,6 +239,8 @@ select.error {
 </table>
 </div>
 </div>
+
+<button onclick="copyAndSubmit()">보고서 복사</button>
 
 <script>
 let workers = [];
@@ -301,6 +303,10 @@ function percent(v,total){
 }
 
 function generateReport(){
+
+
+let confirmCheck = confirm("내용을 한 번 더 확인한 뒤\n맨 밑에 ‘보고서 복사’버튼을 눌러주세요");
+if(!confirmCheck) return;
 
 if(!validateArea()) return;
 if(!validateShop()) return;
@@ -396,6 +402,10 @@ ${d_team || d_event ? `- 대선주조: 대판팀 ${d_team}명 / 행사팀 ${d_ev
 ${notes ? `- ${notes}` : "- 없음"}`;
 
   document.getElementById("result").value = text;
+   document.getElementById("result").scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
   drawReportChart(muhak,hite,daesunSum,lotte,etcCompany,total,shop,area);
   localStorage.setItem("reportGenerated", "yes");
 }
@@ -588,6 +598,9 @@ setInterval(saveData, 2000);
 document.querySelectorAll("#workers input").forEach(el=>{
   el.addEventListener("input", saveData);
 });
+
+// 페이지 닫기 전에 저장
+window.addEventListener("beforeunload", saveData);
 
 function validateArea(){
   let area = document.getElementById("area");
