@@ -217,7 +217,7 @@ select.error {
 <textarea id="special_notes" placeholder="특이사항 입력 &#10; ex. 타사 상권담당자 동행, 타사 새로운 판촉물 있었습니다, 신규 업소가 생겼습니다, &#10; 39-40대 연령층 유동인구가 많았습니다, 단체 테이블이 많았습니다 등"></textarea>
 </div>
 
-<button onclick="generateReport()">보고서 생성</button>
+<button onclick="handleGenerate()">보고서 생성</button>
 
 
 <textarea id="result"></textarea>
@@ -307,9 +307,6 @@ function generateReport(){
 
 let confirmCheck = confirm("내용을 한 번 더 확인한 뒤\n맨 밑에 ‘보고서 복사’버튼을 눌러주세요");
 if(!confirmCheck) return;
-
-if(!validateArea()) return;
-if(!validateShop()) return;
 
 
 let shopInput = document.getElementById("shop");
@@ -624,8 +621,17 @@ function validateShop(){
     return false;
   }
 
+  
+
   shop.classList.remove("error");
   return true;
+}
+
+function handleGenerate(){
+  if(!validateArea()) return;
+  if(!validateShop()) return;
+
+  generateReport();
 }
 
 </script>
