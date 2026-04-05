@@ -274,12 +274,24 @@ function addWorker(){
     <b>${name}</b>
     <button type="button" onclick="removeWorker('${name}')" style="width:80px; background:#e74c3c;">삭제</button>
   </div>
-  <div class="row">전환 좋은데이 <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_good_${sid}"></div>
-  <div class="row">전환 갈매기 <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_gal_${sid}"></div>
-  <div class="row">전환 톡톡 <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_tok_${sid}"></div>
-  <div class="row">추가주문 좋은데이 <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_good_${sid}"></div>
-  <div class="row">추가주문 갈매기 <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_gal_${sid}"></div>
-  <div class="row">추가주문 톡톡 <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_tok_${sid}"></div>
+  <div class="row">전환 좋은데이 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_good_${sid}" placeholder="전환 좋은데이">
+  </div>
+  <div class="row">전환 갈매기 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_gal_${sid}" placeholder="전환 갈매기">
+  </div>
+  <div class="row">전환 톡톡 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_tok_${sid}" placeholder="전환 톡톡">
+  </div>
+  <div class="row">추가주문 좋은데이 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_good_${sid}" placeholder="추가주문 좋은데이">
+  </div>
+  <div class="row">추가주문 갈매기 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_gal_${sid}" placeholder="추가주문 갈매기">
+  </div>
+  <div class="row">추가주문 톡톡 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_tok_${sid}" placeholder="추가주문 톡톡">
+  </div>
 </div>`;
  document.getElementById("workers").insertAdjacentHTML("beforeend",html);
 document.getElementById("workerName").value="";
@@ -552,12 +564,24 @@ function loadWorkers(){
     <b>${name}</b>
     <button type="button" onclick="removeWorker('${name}')" style="width:80px; background:#e74c3c;">삭제</button>
   </div>
-  <div class="row">전환 좋은데이 <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_good_${sid}"></div>
-  <div class="row">전환 갈매기 <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_gal_${sid}"></div>
-  <div class="row">전환 톡톡 <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_tok_${sid}"></div>
-  <div class="row">추가주문 좋은데이 <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_good_${sid}"></div>
-  <div class="row">추가주문 갈매기 <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_gal_${sid}"></div>
-  <div class="row">추가주문 톡톡 <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_tok_${sid}"></div>
+  <div class="row">전환 좋은데이 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_good_${sid}" placeholder="전환 좋은데이">
+  </div>
+  <div class="row">전환 갈매기 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_gal_${sid}" placeholder="전환 갈매기">
+  </div>
+  <div class="row">전환 톡톡 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="conv_tok_${sid}" placeholder="전환 톡톡">
+  </div>
+  <div class="row">추가주문 좋은데이 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_good_${sid}" placeholder="추가주문 좋은데이">
+  </div>
+  <div class="row">추가주문 갈매기 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_gal_${sid}" placeholder="추가주문 갈매기">
+  </div>
+  <div class="row">추가주문 톡톡 
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_tok_${sid}" placeholder="추가주문 톡톡">
+  </div>
 </div>`;
       document.getElementById("workers").insertAdjacentHTML("beforeend",html);
     });
