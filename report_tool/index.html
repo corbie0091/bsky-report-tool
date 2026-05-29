@@ -109,83 +109,96 @@ select.error {
 }
   
 @media (prefers-color-scheme: dark){
-
-  body{
-    background:#121212;
-    color:#f1f1f1;
-  }
-
-  .section,
-  .reportBox,
-  canvas{
-    background:#1e1e1e;
-    color:#f1f1f1;
-    box-shadow:0 0 5px rgba(255,255,255,0.05);
-  }
-
-  h2,h3,h4,b,
-  .reportTitle,
-  .info,
-  th,td{
-    color:#f1f1f1;
-  }
-
-  .company-section{
-    color:#dcdcdc;
-    border-bottom:2px solid #444;
-  }
-
-  input,
-  select,
-  textarea{
-    background:#2a2a2a;
-    color:#fff;
-    border:1px solid #555;
-  }
-
-  input::placeholder,
-  textarea::placeholder{
-    color:#aaa;
-  }
-
-  button{
-    background:#2f2f2f;
-    color:#fff;
-  }
-
-  button:hover{
-    background:#3a3a3a;
-  }
-
-  th{
-    background:#2c2c2c;
-  }
-
-  td{
-    border-bottom:1px solid #444;
-  }
-
-  .worker{
-    border-top:1px solid #444;
-  }
-
-  textarea#result{
-    background:#1e1e1e;
-    color:#fff;
-  }
-
-  select option{
-    background:#1e1e1e;
-    color:#fff;
-  }
+/* 기본 라이트 */
+body{
+  background:#f4f4f4;
+  color:#111;
 }
-  
+
+/* 다크모드 */
+body.dark-mode{
+  background:#121212;
+  color:#f1f1f1;
+}
+
+body.dark-mode .section,
+body.dark-mode .reportBox,
+body.dark-mode canvas{
+  background:#1e1e1e;
+  color:#f1f1f1;
+  box-shadow:0 0 5px rgba(255,255,255,0.05);
+}
+
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode b,
+body.dark-mode .reportTitle,
+body.dark-mode .info,
+body.dark-mode th,
+body.dark-mode td{
+  color:#f1f1f1;
+}
+
+body.dark-mode .company-section{
+  color:#dcdcdc;
+  border-bottom:2px solid #444;
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea{
+  background:#2a2a2a;
+  color:#fff;
+  border:1px solid #555;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder{
+  color:#aaa;
+}
+
+body.dark-mode button{
+  background:#2f2f2f;
+  color:#fff;
+}
+
+body.dark-mode button:hover{
+  background:#3a3a3a;
+}
+
+body.dark-mode th{
+  background:#2c2c2c;
+}
+
+body.dark-mode td{
+  border-bottom:1px solid #444;
+}
+
+body.dark-mode .worker{
+  border-top:1px solid #444;
+}
+
+body.dark-mode textarea#result{
+  background:#1e1e1e;
+  color:#fff;
+}
+
+body.dark-mode select option{
+  background:#1e1e1e;
+  color:#fff;
+}
+}
 </style>
 </head>
 
 <body>
 <h2>남부산 음용비 계산기</h2>
-
+<div style="display:flex; gap:8px; margin-bottom:15px;">
+  <button type="button" onclick="setTheme('light')" style="flex:1;">☀️ 라이트</button>
+  <button type="button" onclick="setTheme('dark')" style="flex:1;">🌙 다크</button>
+  <button type="button" onclick="setTheme('auto')" style="flex:1;">⚙️ 자동</button>
+</div>
 <!-- 상권 입력 -->
 <div class="section">
 <div class="row">
@@ -735,6 +748,36 @@ function handleGenerate(){
 
   generateReport();
 }
+  function setTheme(mode){
+  localStorage.setItem("theme", mode);
+  applyTheme();
+}
+
+function applyTheme(){
+  let theme = localStorage.getItem("theme") || "auto";
+
+  if(theme === "dark"){
+    document.body.classList.add("dark-mode");
+  }
+  else if(theme === "light"){
+    document.body.classList.remove("dark-mode");
+  }
+  else{
+    // 자동모드
+    let dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if(dark){
+      document.body.classList.add("dark-mode");
+    }else{
+      document.body.classList.remove("dark-mode");
+    }
+  }
+}
+
+applyTheme();
+
+window.matchMedia("(prefers-color-scheme: dark)")
+.addEventListener("change", applyTheme);
 
 </script>
 </body>
