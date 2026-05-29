@@ -11,79 +11,42 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
 
 <style>
-:root{
-  --bg:#f4f4f4;
-  --card:#ffffff;
-  --text:#222;
-  --muted:#666;
-  --line:#ddd;
-  --head:#eee;
-  --button:#444;
-  --buttonText:#fff;
-  --input:#fff;
-  --inputText:#222;
-  --shadow:rgba(0,0,0,0.1);
-}
-
-html[data-theme="dark"]{
-  --bg:#111315;
-  --card:#1b1f23;
-  --text:#f1f3f5;
-  --muted:#a7adb4;
-  --line:#343a40;
-  --head:#2a3036;
-  --button:#3b82f6;
-  --buttonText:#fff;
-  --input:#111827;
-  --inputText:#f8fafc;
-  --shadow:rgba(0,0,0,0.35);
-}
-
-.themeToggle{
-  width:auto;
-  padding:8px 12px;
-  margin:0 0 12px 0;
-  float:right;
-  background:var(--button);
-  color:var(--buttonText);
-}
 body{
   font-family:Arial;
   max-width:900px;
   margin:auto;
   padding:20px;
-  background:var(--bg);
-  color:var(--text);
+  background:#f4f4f4;
 }
-
 .section{
-  background:var(--card);
+  background:white;
   padding:15px;
   margin-bottom:15px;
   border-radius:10px;
-  box-shadow:0 0 5px var(--shadow);
+  box-shadow:0 0 5px rgba(0,0,0,0.1);
 }
 .row{
   display:flex;
   justify-content:space-between;
   margin-bottom:6px;
 }
-input,select,textarea{
-  background:var(--input);
-  color:var(--inputText);
-  border:1px solid var(--line);
+input,select{
+  padding:6px;
 }
-
+textarea{
+  width:100%;
+  height:320px;
+  margin-top:10px;
+}
 button{
   width:100%;
   padding:10px;
   margin-top:8px;
   border:none;
-  background:var(--button);
-  color:var(--buttonText);
+  background:#444;
+  color:white;
   border-radius:6px;
 }
-
 .worker{
   border-top:1px solid #ddd;
   padding-top:10px;
@@ -91,7 +54,7 @@ button{
 }
 canvas{
   margin-top:20px;
-  background:var(--card);
+  background:white;
   padding:10px;
   border-radius:10px;
 }
@@ -99,12 +62,11 @@ h3{
   margin-top:0;
 }
 .reportBox{
-  background:var(--card);
+  background:white;
   padding:20px;
   margin-top:20px;
   border-radius:10px;
 }
-
 .reportTitle{
   text-align:center;
   font-weight:bold;
@@ -122,21 +84,20 @@ table{
   border-collapse:collapse;
 }
 th,td{
-  border-bottom:1px solid var(--line);
+  border-bottom:1px solid #ddd;
   padding:8px;
   text-align:center;
 }
 th{
-  background:var(--head);
+  background:#eee;
 }
-
 .company-section {
   padding-top: 10px;
   margin-top: 15px;
   font-weight: bold;
   font-size: 1.2em;
-  color: var(--text);
-  border-bottom: 2px solid var(--line);
+  color: #333;
+  border-bottom: 2px solid #ccc;
 }
 
 .error {
@@ -146,14 +107,85 @@ th{
 select.error {
   border:2px solid red;
 }
+  
+@media (prefers-color-scheme: dark){
 
+  body{
+    background:#121212;
+    color:#f1f1f1;
+  }
+
+  .section,
+  .reportBox,
+  canvas{
+    background:#1e1e1e;
+    color:#f1f1f1;
+    box-shadow:0 0 5px rgba(255,255,255,0.05);
+  }
+
+  h2,h3,h4,b,
+  .reportTitle,
+  .info,
+  th,td{
+    color:#f1f1f1;
+  }
+
+  .company-section{
+    color:#dcdcdc;
+    border-bottom:2px solid #444;
+  }
+
+  input,
+  select,
+  textarea{
+    background:#2a2a2a;
+    color:#fff;
+    border:1px solid #555;
+  }
+
+  input::placeholder,
+  textarea::placeholder{
+    color:#aaa;
+  }
+
+  button{
+    background:#2f2f2f;
+    color:#fff;
+  }
+
+  button:hover{
+    background:#3a3a3a;
+  }
+
+  th{
+    background:#2c2c2c;
+  }
+
+  td{
+    border-bottom:1px solid #444;
+  }
+
+  .worker{
+    border-top:1px solid #444;
+  }
+
+  textarea#result{
+    background:#1e1e1e;
+    color:#fff;
+  }
+
+  select option{
+    background:#1e1e1e;
+    color:#fff;
+  }
+}
+  
 </style>
 </head>
 
 <body>
 <h2>남부산 음용비 계산기</h2>
-<button class="themeToggle" onclick="toggleTheme()" id="themeBtn">🌙 다크모드</button>
-<div style="clear:both"></div>
+
 <!-- 상권 입력 -->
 <div class="section">
 <div class="row">
@@ -284,31 +316,6 @@ select.error {
 <button onclick="copyAndSubmit()">보고서 복사</button>
 
 <script>
-  function applyTheme(theme){
-  document.documentElement.dataset.theme = theme;
-  localStorage.setItem("theme", theme);
-
-  const btn = document.getElementById("themeBtn");
-  if(btn){
-    btn.textContent = theme === "dark" ? "☀️ 라이트모드" : "🌙 다크모드";
-  }
-}
-
-function toggleTheme(){
-  const current = document.documentElement.dataset.theme || "light";
-  applyTheme(current === "dark" ? "light" : "dark");
-
-  if(reportChart){
-    reportChart.options.plugins.legend.labels.color = getCssVar("--text");
-    reportChart.update();
-  }
-}
-
-function getCssVar(name){
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
-
-applyTheme(localStorage.getItem("theme") || "light");
 let workers = [];
 let reportChart;
 
@@ -317,7 +324,7 @@ function getToday(){
   let m=String(d.getMonth()+1).padStart(2,'0');
   let day=String(d.getDate()).padStart(2,'0');
   let week=["일","월","화","수","목","금","토"];
-  return `${m}월 ${day}일(${week[d.getDay()]})`;
+  return ${m}월 ${day}일(${week[d.getDay()]});
 }
 
 function safeId(name){
@@ -334,7 +341,7 @@ function addWorker(){
   workers.push(name);
   let sid = safeId(name);
 
-  let html = `
+  let html = 
 <div class="worker" id="worker_${sid}">
   <div style="display:flex; justify-content:space-between; align-items:center;">
     <b>${name}</b>
@@ -358,7 +365,7 @@ function addWorker(){
   <div class="row">추가주문 톡톡 
     <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_tok_${sid}" placeholder="추가주문 톡톡">
   </div>
-</div>`;
+</div>;
  document.getElementById("workers").insertAdjacentHTML("beforeend",html);
 document.getElementById("workerName").value="";
 
@@ -412,32 +419,32 @@ let shopInput = document.getElementById("shop");
 
   let total_conv_good=0,total_conv_gal=0,total_conv_tok=0;
   let total_add_good=0,total_add_gal=0,total_add_tok=0;
-  let convText = `2. 전환 및 추가주문\n가. 근무인원\n\n부산 갈매기 총 판매 병 수\n`;
+  let convText = 2. 전환 및 추가주문\n가. 근무인원\n\n부산 갈매기 총 판매 병 수\n;
 
   workers.forEach(name=>{
     let sid=safeId(name);
-    let conv_good=val(`conv_good_${sid}`), conv_gal=val(`conv_gal_${sid}`), conv_tok=val(`conv_tok_${sid}`);
-    let add_good=val(`add_good_${sid}`), add_gal=val(`add_gal_${sid}`), add_tok=val(`add_tok_${sid}`);
+    let conv_good=val(conv_good_${sid}), conv_gal=val(conv_gal_${sid}), conv_tok=val(conv_tok_${sid});
+    let add_good=val(add_good_${sid}), add_gal=val(add_gal_${sid}), add_tok=val(add_tok_${sid});
     let totalGal = conv_gal + add_gal;
-    convText += `${name} : ${totalGal}본\n`;
+    convText += ${name} : ${totalGal}본\n;
 
     total_conv_good += conv_good; total_conv_gal += conv_gal; total_conv_tok += conv_tok;
     total_add_good += add_good; total_add_gal += add_gal; total_add_tok += add_tok;
   });
 
-  convText += `\n나. 총 전환: ${total_conv_good}t(좋은데이) / ${total_conv_gal}t(부산갈매기) / ${total_conv_tok}t(톡톡)\n`;
+  convText += \n나. 총 전환: ${total_conv_good}t(좋은데이) / ${total_conv_gal}t(부산갈매기) / ${total_conv_tok}t(톡톡)\n;
   workers.forEach(name=>{
     let sid=safeId(name);
-    convText += `${name}: ${val(`conv_good_${sid}`)}t(좋은데이) / ${val(`conv_gal_${sid}`)}t(부산갈매기) / ${val(`conv_tok_${sid}`)}t(톡톡)\n`;
+    convText += ${name}: ${val(conv_good_${sid})}t(좋은데이) / ${val(conv_gal_${sid})}t(부산갈매기) / ${val(conv_tok_${sid})}t(톡톡)\n;
   });
 
-  convText += `\n다. 총 추가주문: ${total_add_good}t(좋은데이) / ${total_add_gal}t(부산갈매기) / ${total_add_tok}t(톡톡)\n`;
+  convText += \n다. 총 추가주문: ${total_add_good}t(좋은데이) / ${total_add_gal}t(부산갈매기) / ${total_add_tok}t(톡톡)\n;
   workers.forEach(name=>{
     let sid=safeId(name);
-    convText += `${name}: ${val(`add_good_${sid}`)}t(좋은데이) / ${val(`add_gal_${sid}`)}t(부산갈매기) / ${val(`add_tok_${sid}`)}t(톡톡)\n`;
+    convText += ${name}: ${val(add_good_${sid})}t(좋은데이) / ${val(add_gal_${sid})}t(부산갈매기) / ${val(add_tok_${sid})}t(톡톡)\n;
   });
 
-  let text = `< ${date} ${area} 상권 보고 >
+  let text = < ${date} ${area} 상권 보고 >
 
 1. 점유비
 - 총 방문업소: ${shop}개
@@ -470,11 +477,11 @@ let shopInput = document.getElementById("shop");
 ${convText}
 
 3. 타사 활동
-${h_team || h_event ? `- 하이트진로: 대판팀 ${h_team}명 / 행사팀 ${h_event}명` : ""}
-${d_team || d_event ? `- 대선주조: 대판팀 ${d_team}명 / 행사팀 ${d_event}명` : ""}
+${h_team || h_event ? - 하이트진로: 대판팀 ${h_team}명 / 행사팀 ${h_event}명 : ""}
+${d_team || d_event ? - 대선주조: 대판팀 ${d_team}명 / 행사팀 ${d_event}명 : ""}
 
 4. 특이사항
-${notes ? `- ${notes}` : "- 없음"}`;
+${notes ? - ${notes} : "- 없음"};
 
   document.getElementById("result").value = text;
    document.getElementById("result").scrollIntoView({
@@ -536,10 +543,7 @@ function drawReportChart(m,h,d,l,e,total,shop,area){
     plugins:[ChartDataLabels],
     options:{
       plugins:{
-        legend:{
-  position:"right",
-  labels:{color:getCssVar("--text")}
-},
+        legend:{position:"right"},
         datalabels:{
           color:"#fff",
           font:{weight:"bold",size:16},
@@ -553,7 +557,7 @@ function drawReportChart(m,h,d,l,e,total,shop,area){
   let data=[m,h,d,l,e];
   let tbody=document.querySelector("#reportTable tbody");
   tbody.innerHTML="";
-  companies.forEach((c,i)=>{ tbody.innerHTML+=`<tr><td>${c}</td><td>${data[i]}</td><td>${percent(data[i],total)}</td></tr>`; });
+  companies.forEach((c,i)=>{ tbody.innerHTML+=<tr><td>${c}</td><td>${data[i]}</td><td>${percent(data[i],total)}</td></tr>; });
 }
 
 document.getElementById("shop").addEventListener("input", function(){
@@ -627,7 +631,7 @@ function loadWorkers(){
     workers = JSON.parse(savedWorkers);
     workers.forEach(name=>{
       let sid = safeId(name);
-      let html = `
+      let html = 
 <div class="worker" id="worker_${sid}">
   <div style="display:flex; justify-content:space-between; align-items:center;">
     <b>${name}</b>
@@ -651,12 +655,11 @@ function loadWorkers(){
   <div class="row">추가주문 톡톡 
     <input type="text" inputmode="numeric" pattern="[0-9]*" id="add_tok_${sid}" placeholder="추가주문 톡톡">
   </div>
-</div>`;
+</div>;
       document.getElementById("workers").insertAdjacentHTML("beforeend",html);
     });
   }
 
-  // 🔥 이거 추가 (중요)
   document.querySelectorAll("#workers input").forEach(el=>{
     el.addEventListener("input", saveData);
   });
@@ -669,8 +672,8 @@ function removeWorker(name){
 
   // 입력값 삭제 (핵심)
   [
-    `conv_good_${sid}`, `conv_gal_${sid}`, `conv_tok_${sid}`,
-    `add_good_${sid}`, `add_gal_${sid}`, `add_tok_${sid}`
+    conv_good_${sid}, conv_gal_${sid}, conv_tok_${sid},
+    add_good_${sid}, add_gal_${sid}, add_tok_${sid}
   ].forEach(id => localStorage.removeItem(id));
 
   workers = workers.filter(w => w !== name);
