@@ -11,42 +11,79 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
 
 <style>
+:root{
+  --bg:#f4f4f4;
+  --card:#ffffff;
+  --text:#222;
+  --muted:#666;
+  --line:#ddd;
+  --head:#eee;
+  --button:#444;
+  --buttonText:#fff;
+  --input:#fff;
+  --inputText:#222;
+  --shadow:rgba(0,0,0,0.1);
+}
+
+html[data-theme="dark"]{
+  --bg:#111315;
+  --card:#1b1f23;
+  --text:#f1f3f5;
+  --muted:#a7adb4;
+  --line:#343a40;
+  --head:#2a3036;
+  --button:#3b82f6;
+  --buttonText:#fff;
+  --input:#111827;
+  --inputText:#f8fafc;
+  --shadow:rgba(0,0,0,0.35);
+}
+
+.themeToggle{
+  width:auto;
+  padding:8px 12px;
+  margin:0 0 12px 0;
+  float:right;
+  background:var(--button);
+  color:var(--buttonText);
+}
 body{
   font-family:Arial;
   max-width:900px;
   margin:auto;
   padding:20px;
-  background:#f4f4f4;
+  background:var(--bg);
+  color:var(--text);
 }
+
 .section{
-  background:white;
+  background:var(--card);
   padding:15px;
   margin-bottom:15px;
   border-radius:10px;
-  box-shadow:0 0 5px rgba(0,0,0,0.1);
+  box-shadow:0 0 5px var(--shadow);
 }
 .row{
   display:flex;
   justify-content:space-between;
   margin-bottom:6px;
 }
-input,select{
-  padding:6px;
+input,select,textarea{
+  background:var(--input);
+  color:var(--inputText);
+  border:1px solid var(--line);
 }
-textarea{
-  width:100%;
-  height:320px;
-  margin-top:10px;
-}
+
 button{
   width:100%;
   padding:10px;
   margin-top:8px;
   border:none;
-  background:#444;
-  color:white;
+  background:var(--button);
+  color:var(--buttonText);
   border-radius:6px;
 }
+
 .worker{
   border-top:1px solid #ddd;
   padding-top:10px;
@@ -54,7 +91,7 @@ button{
 }
 canvas{
   margin-top:20px;
-  background:white;
+  background:var(--card);
   padding:10px;
   border-radius:10px;
 }
@@ -62,11 +99,12 @@ h3{
   margin-top:0;
 }
 .reportBox{
-  background:white;
+  background:var(--card);
   padding:20px;
   margin-top:20px;
   border-radius:10px;
 }
+
 .reportTitle{
   text-align:center;
   font-weight:bold;
@@ -84,20 +122,21 @@ table{
   border-collapse:collapse;
 }
 th,td{
-  border-bottom:1px solid #ddd;
+  border-bottom:1px solid var(--line);
   padding:8px;
   text-align:center;
 }
 th{
-  background:#eee;
+  background:var(--head);
 }
+
 .company-section {
   padding-top: 10px;
   margin-top: 15px;
   font-weight: bold;
   font-size: 1.2em;
-  color: #333;
-  border-bottom: 2px solid #ccc;
+  color: var(--text);
+  border-bottom: 2px solid var(--line);
 }
 
 .error {
@@ -113,7 +152,8 @@ select.error {
 
 <body>
 <h2>남부산 음용비 계산기</h2>
-
+<button class="themeToggle" onclick="toggleTheme()" id="themeBtn">🌙 다크모드</button>
+<div style="clear:both"></div>
 <!-- 상권 입력 -->
 <div class="section">
 <div class="row">
@@ -244,6 +284,31 @@ select.error {
 <button onclick="copyAndSubmit()">보고서 복사</button>
 
 <script>
+  function applyTheme(theme){
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("theme", theme);
+
+  const btn = document.getElementById("themeBtn");
+  if(btn){
+    btn.textContent = theme === "dark" ? "☀️ 라이트모드" : "🌙 다크모드";
+  }
+}
+
+function toggleTheme(){
+  const current = document.documentElement.dataset.theme || "light";
+  applyTheme(current === "dark" ? "light" : "dark");
+
+  if(reportChart){
+    reportChart.options.plugins.legend.labels.color = getCssVar("--text");
+    reportChart.update();
+  }
+}
+
+function getCssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+applyTheme(localStorage.getItem("theme") || "light");
 let workers = [];
 let reportChart;
 
@@ -471,7 +536,10 @@ function drawReportChart(m,h,d,l,e,total,shop,area){
     plugins:[ChartDataLabels],
     options:{
       plugins:{
-        legend:{position:"right"},
+        legend:{
+  position:"right",
+  labels:{color:getCssVar("--text")}
+},
         datalabels:{
           color:"#fff",
           font:{weight:"bold",size:16},
