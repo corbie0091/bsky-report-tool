@@ -196,29 +196,26 @@ th{background:var(--head)}
   .row input,.row select{width:100%}
 }
 
-/* 라이트모드 기본 */
+/* 라이트모드 */
 .add-worker-btn{
   background:#2d7ef7;
   color:white;
-  border:none;
-  padding:12px;
-  border-radius:10px;
-  transition:0.2s;
+}
+
+/* 라이트모드 hover는 중요 없으면 그대로 */
+.add-worker-btn:hover{
+  background:#2d7ef7;
 }
 
 /* 다크모드 */
-@media (prefers-color-scheme: dark){
+body.dark-mode .add-worker-btn{
+  background:#555;
+  color:white;
+}
 
-  /* 기본 회색 */
-  .add-worker-btn{
-    background:#555;
-    color:white;
-  }
-
-  /* hover 시 검은색 */
-  .add-worker-btn:hover{
-    background:#111;
-  }
+/* 다크모드 hover */
+body.dark-mode .add-worker-btn:hover{
+  background:#111;
 }
 </style>
 </head>
