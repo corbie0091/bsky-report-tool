@@ -195,6 +195,24 @@ th{background:var(--head)}
   .row{align-items:stretch;flex-direction:column}
   .row input,.row select{width:100%}
 }
+
+/* 기본(라이트모드) */
+.add-worker-btn{
+  background:#2d7ef7;
+  color:white;
+  border:none;
+  padding:12px;
+  border-radius:10px;
+  font-size:16px;
+}
+
+/* 다크모드 */
+@media (prefers-color-scheme: dark){
+  .add-worker-btn{
+    background:#555;
+    color:white;
+  }
+}
 </style>
 </head>
 
@@ -262,7 +280,9 @@ th{background:var(--head)}
 <div class="section">
 <h3>2. 전환 및 추가주문(실적 부분입니다)</h3>
 <input id="workerName" placeholder="이름 입력">
-<button type="button" onclick="addWorker()">이름 입력하고 근무자 추가하기</button>
+<button type="button" class="add-worker-btn" onclick="addWorker()">
+  이름 입력하고 근무자 추가하기
+</button>
 <div id="workers"></div>
 </div>
 
