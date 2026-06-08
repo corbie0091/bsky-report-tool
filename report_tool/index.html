@@ -196,7 +196,7 @@ th{background:var(--head)}
   .row input,.row select{width:100%}
 }
 
-/* 기본 상태 */
+/* 라이트모드 기본 */
 .add-worker-btn{
   background:#2d7ef7;
   color:white;
@@ -206,22 +206,18 @@ th{background:var(--head)}
   transition:0.2s;
 }
 
-/* 일반모드 hover */
-.add-worker-btn:hover{
-  background:#111;
-}
-
 /* 다크모드 */
 @media (prefers-color-scheme: dark){
 
-  /* 기본은 그대로 파란색 유지 */
+  /* 기본 회색 */
   .add-worker-btn{
     background:#555;
+    color:white;
   }
 
-  /* hover 시 회색 */
+  /* hover 시 검은색 */
   .add-worker-btn:hover{
-    background:#555;
+    background:#111;
   }
 }
 </style>
